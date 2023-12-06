@@ -19,6 +19,8 @@ from .sweeney import *
 from .sundt import *
 from .mrg import *
 from .pas import *
+from .real_neuron import * #RealisticNeuron
+from .Ca_only import *
 
 
 def getNeuronsDict():

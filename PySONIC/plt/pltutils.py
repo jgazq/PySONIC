@@ -257,7 +257,10 @@ class GenericPlot:
     @staticmethod
     def setTickLabelsFontSize(ax, fs):
         for tick in ax.xaxis.get_major_ticks() + ax.yaxis.get_major_ticks():
-            tick.label.set_fontsize(fs)
+            #adapted by Joaquin
+            tick.label1.set_fontsize(fs)
+            tick.label2.set_fontsize(fs)
+            #adapted by Joaquin
 
     @staticmethod
     def setXLabel(ax, xplt, fs):
@@ -399,7 +402,7 @@ class ComparativePlot(GenericPlot):
                 p = self.comp_info.get('precision', 0)
                 comp_values = [f"{si_format(v, p)}{self.comp_info['unit']}".replace(' ', '\ ')
                                for v in comp_values]
-            comp_labels = ['$\\rm{} = {}$'.format(self.comp_info['label'], x) for x in comp_values]
+            comp_labels = ['$\\rm {} = {}$'.format(self.comp_info['label'], x) for x in comp_values]
         else:
             comp_labels = comp_values
         return comp_values, comp_labels

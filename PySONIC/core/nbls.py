@@ -177,9 +177,12 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             Qm_cycle = np.fft.irfft(Qm_fft, n=drive.nPerCycle) * drive.nPerCycle
             novertones = len(A_Qm)
 
+        #print(f'pre simulation {"-"*260} ###')
         # Run simulation and extract capacitance vector from last cycle
-        Z_cycle = super().simCycles(drive, Qm_cycle).tail(drive.nPerCycle)['Z'].values  # m
-        Cm_cycle = self.v_capacitance(Z_cycle)  # F/m2
+        Z_cycle = super().simCycles(drive, Qm_cycle).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
+        print(f"simulated for: {drive},{fs},{Qm0} ###")
+        Cm_cycle = self.v_capacitance(Z_cycle)#;print(len(Cm_cycle))  # F/m2
+        #print(f'post simulation {"-"*260} ###')
 
         # For each coverage fraction
         effvars_list = []

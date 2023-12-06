@@ -515,7 +515,8 @@ class EffectiveVariablesDict():
         self.d[key] = value
 
     def __delitem__(self, key):
-        del self.d[key]
+        if key in self.d.keys():
+            del self.d[key]
 
     def pop(self, key):
         return self.d.pop(key)

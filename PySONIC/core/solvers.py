@@ -322,9 +322,12 @@ class PeriodicSolver(ODESolver):
         '''
         # Extract the last 2 cycles of the primary variables from the solution
         y_last, y_prec = [self.getCycle(-i, ivars=self.i_primary_vars)[1] for i in [1, 2]]
+        #print(f"ylast: {y_last[-5:]}\nyprec: {y_prec[-5:]} ###")
 
         # Evaluate ratios of RMSE between the two cycles / variation range over the last cycle
-        ratios = rmse(y_last, y_prec, axis=0) / np.ptp(y_last, axis=0)
+        #print(f"rmse: {rmse(y_last, y_prec, axis=0)} ###")
+        #print(f"ptp: {np.ptp(y_last, axis=0)}, max = {np.max(y_last,axis=0)}, min = {np.min(y_last,axis=0)} ###")
+        ratios = rmse(y_last, y_prec, axis=0) / np.ptp(y_last, axis=0)#; print(f"ratios: {ratios} ###")
 
         # Classify solution as periodically stable only if all ratios are below critical threshold
         return np.all(ratios < MAX_RMSE_PTP_RATIO)
@@ -348,14 +351,20 @@ class PeriodicSolver(ODESolver):
         # Initialize system
         if y0 is not None:
             self.initialize(y0, **kwargs)
+        #print(f"y0 init values:{y0} ###")
+        #print(f"self.t: {self.t[:5]}, len(t): {len(self.t)}\nself.y: {self.y[:5]}, len(y): {len(self.y)}\n")
 
         # Integrate system for minimal number of cycles
         for i in range(nmin):
+            #print(f"iteration {i}: ###")
             self.integrateCycle()
+            #print(f"self.t: {self.t[-5:]}, len(t): {len(self.t)}\nself.y: {self.y[-5:]}, len(y): {len(self.y)}\n")
 
         # Keep integrating system periodically until stopping criterion is met
         while not self.isPeriodicallyStable() and i < nmax:
+            #print(f"iteration {i} ###")
             self.integrateCycle()
+            #print(f"self.t: {self.t[-5:]}, len(t): {len(self.t)}\nself.y: {self.y[-5:]}, len(y): {len(self.y)}\n")
             i += 1
 
         # Log stopping criterion

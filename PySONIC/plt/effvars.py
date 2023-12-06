@@ -147,6 +147,8 @@ def plotEffectiveVariables(pneuron, a=None, f=None, A=None, nlevels=10,
     del keys[keys.index('Cm')]
     del keys[keys.index('Vm')]
     keys = ['Cm', 'Vm'] + keys
+    keys = keys[:]
+    #print(keys)
 
     # Get reference US-OFF lookups (1D)
     lookupsoff = lkp.projectOff()

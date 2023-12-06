@@ -355,7 +355,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
     @staticmethod
     def shareX(axes):
         for ax in axes[:-1]:
-            ax.get_shared_x_axes().join(ax, axes[-1])
+            ax.get_shared_x_axes().joined(ax, axes[-1]) #changed by Joaquin
             ax.set_xticklabels([])
 
     @classmethod
