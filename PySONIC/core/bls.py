@@ -534,6 +534,15 @@ class BilayerSonophore(Model):
             :return: internal gas molar content (mol)
         '''
         return P * V / (Rg * cls.T)
+    
+    def PS(self, Z):
+        ''' Elastic membrane tension pressure developed in the two leaflets
+
+            :param Z: leaflet apex deflection (m)
+            :return: tension pressure (Pa)
+        '''
+        ks = 0.24 #N/m^2, Lemaire (2019)
+        return (2*ks*Z**3)/(self.a**2*(self.a**2+Z**2))
 
     def PtotQS(self, Z, ng, Qm, Pac, Pm_comp_method):
         ''' Net quasi-steady pressure for a given acoustic pressure
@@ -550,7 +559,9 @@ class BilayerSonophore(Model):
             Pm = self.PMavg(Z, self.curvrad(Z), self.surface(Z))
         elif Pm_comp_method is PmCompMethod.predict:
             Pm = self.PMavgpred(Z)
-        return Pm + self.gasmol2Pa(ng, self.volume(Z)) - self.P0 - Pac + self.Pelec(Z, Qm)
+        if Pac < 1e-5: #if the acoustic pressure is smaller than 10^-5 it is assumed to be zero
+            return Pm + self.Pelec(Z, Qm) - self.PS(Z) #P_G and P_0 cancel each other out and P_ac is zero
+        return Pm + self.gasmol2Pa(ng, self.volume(Z)) - self.P0 - Pac + self.Pelec(Z, Qm) - self.PS(Z) #addition of tension pressure
 
     def balancedefQS(self, ng, Qm, Pac=0.0, Pm_comp_method=PmCompMethod.predict):
         ''' Quasi-steady equilibrium deflection for a given acoustic pressure
@@ -564,6 +575,7 @@ class BilayerSonophore(Model):
         '''
         Zbounds = (self.Zmin, self.a)
         PQS = [self.PtotQS(x, ng, Qm, Pac, Pm_comp_method) for x in Zbounds]
+        print(f"PQS: {PQS}")
         if not (PQS[0] > 0 > PQS[1]):
             s = 'P_QS not changing sign within [{:.2f}, {:.2f}] nm interval: '.format(
                 *np.array(Zbounds) * 1e9)

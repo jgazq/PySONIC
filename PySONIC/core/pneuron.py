@@ -268,6 +268,7 @@ class PointNeuron(Model):
     @classmethod
     def getEffRates(cls, Vm):
         ''' Compute array of effective rate constants for a given membrane potential vector. '''
+        #print(cls.effRates)
         return {k: np.mean(np.vectorize(v)(Vm)) for k, v in cls.effRates().items()}
 
     def getLookup(self):

@@ -244,6 +244,7 @@ class Lookup:
 
         # Check that value is within the bounds of the reference vector
         if not self.kwattrs['extrapolate']:
+            #print("self.refs.keys:\t",self.refs.keys)
             value = isWithin(key, value, (self.refs[key].min(), self.refs[key].max()))
 
         # Get the axis index of the reference vector

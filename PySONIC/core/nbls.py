@@ -179,10 +179,15 @@ class NeuronalBilayerSonophore(BilayerSonophore):
 
         #print(f'pre simulation {"-"*260} ###')
         # Run simulation and extract capacitance vector from last cycle
-        Z_cycle = super().simCycles(drive, Qm_cycle).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
+        #print('drive.A:\t',drive.A)
+        if drive.A < 1e-10: #if there is no stimulation -> amplitude = 0, only simulate 2 periods as the deflection is constant
+            Z_cycle = super().simCycles(drive, Qm_cycle,nmax=2).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
+        else:
+            Z_cycle = super().simCycles(drive, Qm_cycle).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
+        #print(Z_cycle)
         print(f"simulated for: {drive},{fs},{Qm0} ###")
         Cm_cycle = self.v_capacitance(Z_cycle)#;print(len(Cm_cycle))  # F/m2
-        #print(f'post simulation {"-"*260} ###')
+        # print(f'post simulation {"-"*260} ###')
 
         # For each coverage fraction
         effvars_list = []
@@ -192,7 +197,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
 
             # Compute effective (cycle-average) membrane potential
             effvars = {'V': np.mean(Vm_cycle)}
-
+            
             # If Qm overtones were provided, compute Vm overtones
             if novertones > 0:
                 # classic Fourier coefficients
@@ -204,10 +209,13 @@ class NeuronalBilayerSonophore(BilayerSonophore):
                     effvars[f'phi_V{i}'] = phi_Vm[i]
 
             # Add computed effective rates
+            #print(Vm_cycle)
             effvars.update(self.pneuron.getEffRates(Vm_cycle))
 
             # Append to list
             effvars_list.append(effvars)
+
+        print('effvars:\t',effvars)
 
         # Log process
         log = f'{self}: lookups @ {drive.desc}, Qm0 = {Qm0 * 1e5:.2f} nC/cm2'
