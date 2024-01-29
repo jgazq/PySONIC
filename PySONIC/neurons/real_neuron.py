@@ -3,9 +3,7 @@
 # @Email: theo.lemaire@epfl.ch
 # @Date:   2019-06-11 15:58:38
 # @Last Modified by:   Joaquin Gazquez
-# @Last Modified time: 2023-12-08 16:24:01
-#running python .\scripts\run_lookups_MC.py -n realneuron -f 1000 -a 32
-#in C:\Users\jgazquez\RealSONIC uses THIS file and not real_neuron.py in the PySONIC folder inside the RealSONIC project
+# @Last Modified time: 2024-01-18 14:53:55
                    
 import numpy as np
 from neuron import h
@@ -421,6 +419,7 @@ class RealisticNeuron(PointNeuron):
         ''' iIh current '''
         x_dict = {'e': e for e in [m_Ih]}
         variables = tf.currents_from_BREAKPOINT(list_mod=cls.mod_files[4], mod_name='Ih', Vm=Vm, x_dict = x_dict, g_dict = cls.g_dict, location = "somatic")
+        print(x_dict,'\n\n',variables)
         currents = [e for e in variables.keys() if (e.startswith('i') or e.startswith('I'))]
         print(currents)
         if currents:

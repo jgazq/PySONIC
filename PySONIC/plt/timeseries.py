@@ -223,7 +223,7 @@ class CompTimeSeries(ComparativePlot, TimeSeriesPlot):
         '''
         self.checkInputs(labels, patches)
         fcodes = []
-
+        
         fig, ax = self.createBackBone(figsize)
         if inset is not None:
             inset_ax = self.addInset(fig, ax, inset)

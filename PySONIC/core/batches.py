@@ -85,6 +85,7 @@ class Batch:
 
     def getNConsumers(self):
         ''' Determine number of consumers based on queue length and number of available CPUs. '''
+        print(f"getNConsumers: {mp.cpu_count(), len(self.queue)}")
         return min(mp.cpu_count(), len(self.queue))
 
     def start(self):

@@ -45,14 +45,22 @@ def cm2inch(*tupl):
 
 
 def extractPltVar(model, pltvar, df, meta=None, nsamples=0, name=''):
+    #print(f"pltvar: {pltvar}")
+    #print(f"df: {df}")
     if 'func' in pltvar:
         s = pltvar['func']
         if not s.startswith('meta'):
             s = f'model.{s}'
+        #replace all gating parameters with an underscore by a tuple (as in setProbes), this is done without checking if ABERRA -> POTENTIAL RISK
+        changes = re.findall('\"[a-zA-Z]*_[a-zA-Z]*\"',s)
+        for e in changes:
+            f = f'({e.split("_")[0]}", "{e.split("_")[1]})'
+            s = s.replace(e,f)
         try:
             var = eval(s)
         except AttributeError as err:
             if hasattr(model, 'pneuron'):
+                #print(s.replace('model', 'model.pneuron'))
                 var = eval(s.replace('model', 'model.pneuron'))
             else:
                 raise err
@@ -61,7 +69,10 @@ def extractPltVar(model, pltvar, df, meta=None, nsamples=0, name=''):
     elif 'constant' in pltvar:
         var = eval(pltvar['constant']) * np.ones(nsamples)
     else:
-        var = df[name]
+        if name in list(df): #checks first if the name is in the list
+            var = df[name]
+        else: #this is not the case if ABERRA cells are used (programmed it like this instead of if ABERRA because this constant is not defined in PySONIC)
+            var = df[(name.split('_')[0], name.split('_')[1])] #split the gating var and mechanisms as done when setting the probes
     if isinstance(var, pd.Series):
         var = var.values
     var = var.copy()

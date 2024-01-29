@@ -850,7 +850,14 @@ def moveItem(l, value, itarget):
 
 
 def gaussian(x, mu=0., sigma=1., A=1.):
+    #to check the calculation of the Gaussian source for every section
+    #print(f"x = {x}, A = {A*1e-3} kPa, mu = {mu}, sigma = {sigma}\ngaussian = {A * np.exp(-((x - mu) / sigma)**2 / 2)}") 
+    #return np.array([A]*len(x)) #if we want a uniform stimultion instead of gaussian => better to implement a uniform class
     return A * np.exp(-((x - mu) / sigma)**2 / 2)
+
+
+def gaussian3D(x, y, z, mux=0., muy=0., muz=0., sigmax=1., sigmay=1., sigmaz=1., A=1.):
+    return A * np.exp(-((x - mux) / sigmax)**2 / 2 - ((y - muy) / sigmay)**2 / 2 - ((z - muz) / sigmaz)**2 / 2)
 
 
 def isPickable(obj):
