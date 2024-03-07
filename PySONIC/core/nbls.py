@@ -7,6 +7,7 @@
 
 import logging
 import numpy as np
+import datetime
 
 from .solvers import EventDrivenSolver, HybridSolver
 from .bls import BilayerSonophore
@@ -151,7 +152,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         return fs * x + (1 - fs) * x0
 
     @timer
-    def computeEffVars(self, drive, fs, Qm0, Qm_overtones=None):
+    def computeEffVars(self, drive, Cm0, fs, Qm0, Qm_overtones=None):
         ''' Compute "effective" coefficients of the HH system for a specific
             acoustic stimulus and charge density.
 
@@ -185,37 +186,54 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         else:
             Z_cycle = super().simCycles(drive, Qm_cycle).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
         #print(Z_cycle)
-        print(f"simulated for: {drive},{fs},{Qm0} ###")
-        Cm_cycle = self.v_capacitance(Z_cycle)#;print(len(Cm_cycle))  # F/m2
+        #print(f"simulated for: {drive},{fs},{Qm0} ###")
         # print(f'post simulation {"-"*260} ###')
 
-        # For each coverage fraction
         effvars_list = []
-        for x in fs:
-            # Compute membrane potential vector
-            Vm_cycle = Qm_cycle / self.spatialAverage(x, Cm_cycle, self.Cm0) * 1e3  # mV
-
-            # Compute effective (cycle-average) membrane potential
-            effvars = {'V': np.mean(Vm_cycle)}
+        # For each membrane capacitance at rest
+        for y in Cm0:
             
-            # If Qm overtones were provided, compute Vm overtones
-            if novertones > 0:
-                # classic Fourier coefficients
-                Vm_coeffs = np.fft.rfft(Vm_cycle)[:novertones + 1] / drive.nPerCycle
-                # amplitude-phase formalism
-                A_Vm, phi_Vm = np.abs(Vm_coeffs), np.angle(Vm_coeffs)
-                for i in range(1, novertones + 1):
-                    effvars[f'A_V{i}'] = A_Vm[i]
-                    effvars[f'phi_V{i}'] = phi_Vm[i]
+            self.Cm0 = y #code was adapted so self.Cm0 is not used but maybe better to just change it -> this gets defined in init of BilayerSonophore
+            self.pneuron.Cm0 = y #also change the capacitance in the pneuron (Qbounds is already calculated before this adaptation so has no influence in Q-range)
 
-            # Add computed effective rates
-            #print(Vm_cycle)
-            effvars.update(self.pneuron.getEffRates(Vm_cycle))
+            new_bounds = self.pneuron.Qbounds
+            if Qm0 > new_bounds[1] or Qm0 < new_bounds[0]:
+                #print(f'{Qm0} doesnt fall in the range of {new_bounds}')
+                effvars = {'V': 0}
+                effrates = self.pneuron.getZeroRates() #add zeroes in the LUT #POTENTIAL RISK
+                effvars.update(effrates) 
+                effvars_list.append(effvars)
+                continue
 
-            # Append to list
-            effvars_list.append(effvars)
+            Cm_cycle = self.v_capacitance(Z_cycle,y)#;print(len(Cm_cycle))  # F/m2
+            # For each coverage fraction
+            for x in fs:
+                # Compute membrane potential vector
+                Vm_cycle = Qm_cycle / self.spatialAverage(x, Cm_cycle, self.Cm0) * 1e3  # mV
 
-        print('effvars:\t',effvars)
+                # Compute effective (cycle-average) membrane potential
+                effvars = {'V': np.mean(Vm_cycle)}
+
+                # If Qm overtones were provided, compute Vm overtones
+                if novertones > 0:
+                    # classic Fourier coefficients
+                    Vm_coeffs = np.fft.rfft(Vm_cycle)[:novertones + 1] / drive.nPerCycle
+                    # amplitude-phase formalism
+                    A_Vm, phi_Vm = np.abs(Vm_coeffs), np.angle(Vm_coeffs)
+                    for i in range(1, novertones + 1):
+                        effvars[f'A_V{i}'] = A_Vm[i]
+                        effvars[f'phi_V{i}'] = phi_Vm[i]
+
+                # Add computed effective rates
+                #print(Vm_cycle)
+                #print(y,np.mean(Vm_cycle)) #to check the mean for every possible Cm0 value
+                effrates = self.pneuron.getEffRates(Vm_cycle) #bottleneck part of the code -> takes most time
+
+                effvars.update(effrates) 
+                # Append to list
+                effvars_list.append(effvars)
+
+        #print('effvars:\t',effvars)
 
         # Log process
         log = f'{self}: lookups @ {drive.desc}, Qm0 = {Qm0 * 1e5:.2f} nC/cm2'
@@ -232,8 +250,8 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         # Return effective coefficients
         return effvars_list
 
-    def getLookupFileName(self, a=None, f=None, A=None, fs=None, novertones=0.):
-        if all(x is None for x in [a, f, A, fs]):
+    def getLookupFileName(self, a=None, f=None, A=None, Cm0=None, fs=None, novertones=0.):
+        if all(x is None for x in [a, f, A, fs, Cm0]):
             fs = 1.
         try:
             fname = f'{self.pneuron.lookup_name}_lookups'
@@ -245,10 +263,13 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             fname += f'_{f * 1e-3:.0f}kHz'
         if A is not None:
             fname += f'_{A * 1e-3:.0f}kPa'
+        if Cm0 is not None:
+            fname += f'_{Cm0 * 1e2:.0f}uF_cm2'
         if fs is not None:
             fname += f'_fs{fs:.2f}'
         if novertones > 0:
             fname += f'_{novertones}overtones'
+        print(f'loaded pickle file name: {fname}.pkl')
         return f'{fname}.pkl'
 
     def getLookupFilePath(self, *args, **kwargs):
@@ -262,11 +283,16 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             del lkp.tables['tcomp']
         return lkp
 
-    def getLookup2D(self, f, fs):
-        proj_kwargs = {'a': self.a, 'f': f, 'fs': fs}
+    def getLookup2D(self, f, fs, Cm0=None):
+        proj_kwargs = {'a': self.a, 'f': f, 'fs': fs} #BREAKPOINT
         proj_str = f'a = {si_format(self.a)}m, f = {si_format(f)}Hz, fs = {fs * 1e2:.0f}%'
+        if Cm0:
+            print(Cm0)
+            proj_kwargs['Cm0'] = 1.e-2 #TESTING
+            print(proj_kwargs['Cm0'])
+            proj_str += f'Cm0 = {si_format(Cm0)}F/m2'
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
-        if fs < 1.:
+        if fs < 1.: #why are a and f only included in filename if fs<1 and is fs left out? where is A??
             kwargs = proj_kwargs.copy()
             kwargs['fs'] = None
         else:

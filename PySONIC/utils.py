@@ -79,7 +79,7 @@ class TqdmHandler(logging.StreamHandler):
 logger = setLogger('PySONIC', my_log_formatter)
 
 
-LOOKUP_DIR = os.path.abspath(os.path.split(__file__)[0] + "/lookups")#/test_joa/")
+LOOKUP_DIR = os.path.abspath(os.path.split(__file__)[0] + "/lookups/test_joa/")
              #'c:\\users\\jgazquez\\RealSONIC\\PySONIC\\lookups\\test_joa' #adapted by joa
 
 
@@ -411,7 +411,7 @@ def timer(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = time.perf_counter()
-        value = func(*args, **kwargs)
+        value = func(*args, **kwargs) #BREAKPOINT
         end_time = time.perf_counter()
         run_time = end_time - start_time
         return value, run_time
