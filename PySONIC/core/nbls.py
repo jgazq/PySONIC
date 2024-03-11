@@ -288,7 +288,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         proj_str = f'a = {si_format(self.a)}m, f = {si_format(f)}Hz, fs = {fs * 1e2:.0f}%'
         if Cm0:
             print(Cm0)
-            proj_kwargs['Cm0'] = 1.e-2 #TESTING
+            proj_kwargs['Cm0'] = 1.e-2 #TESTING -> replace with multiplication factor
             print(proj_kwargs['Cm0'])
             proj_str += f'Cm0 = {si_format(Cm0)}F/m2'
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
