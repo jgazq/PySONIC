@@ -451,6 +451,8 @@ class MechSimParser(SimParser):
         self.addEmbedding()
         self.addCm0()
         self.addQm0()
+        self.addQm0start()
+        self.addQm0end()
         self.addFrequency()
         self.addAmplitude()
         self.addCharge()
@@ -471,6 +473,14 @@ class MechSimParser(SimParser):
     def addQm0(self):
         self.add_argument(
             '--Qm0', type=float, nargs='+', help='Resting membrane charge density (nC/cm2)')
+        
+    def addQm0start(self):
+        self.add_argument(
+            '--Qm0start', type=int, nargs='+', help='Resting membrane charge density (nC/cm2) range starting value')
+        
+    def addQm0end(self):
+        self.add_argument(
+            '--Qm0end', type=int, nargs='+', help='Resting membrane charge density (nC/cm2) range ending value')
 
     def addFrequency(self):
         self.add_argument(
