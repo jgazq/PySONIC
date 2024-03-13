@@ -250,7 +250,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         # Return effective coefficients
         return effvars_list
 
-    def getLookupFileName(self, a=None, f=None, A=None, Cm0=None, fs=None, novertones=0.):
+    def getLookupFileName(self, a=None, f=None, A=None, Qstart=None, Qend=None, Cm0=None, fs=None, novertones=0.):
         if all(x is None for x in [a, f, A, fs, Cm0]):
             fs = 1.
         try:
@@ -263,6 +263,10 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             fname += f'_{f * 1e-3:.0f}kHz'
         if A is not None:
             fname += f'_{A * 1e-3:.0f}kPa'
+        if Qstart is not None:
+            fname += f'_[{Qstart}'
+        if Qend is not None:
+            fname += f'_{Qend}]'
         if Cm0 is not None:
             fname += f'_{Cm0 * 1e2:.0f}uF_cm2'
         if fs is not None:
@@ -284,6 +288,9 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         return lkp
 
     def getLookup2D(self, f, fs, Cm0=None):
+        #6D: a,f,A,Q,C,fs -> 2D: A,Q
+        #so we only put A and Q in the name before merging them (when calculating the LUT) as they need to be complete to load into the NMODL files
+        #when reading them in, A and Q are not included in the name
         proj_kwargs = {'a': self.a, 'f': f, 'fs': fs} #BREAKPOINT
         proj_str = f'a = {si_format(self.a)}m, f = {si_format(f)}Hz, fs = {fs * 1e2:.0f}%'
         if Cm0:
@@ -294,9 +301,10 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
         if fs < 1.: #why are a and f only included in filename if fs<1 and is fs left out? where is A??
             kwargs = proj_kwargs.copy()
-            kwargs['fs'] = None
+            #kwargs['fs'] = None #why only include if 1?
         else:
-            kwargs = {'fs': fs}
+            #kwargs = {'fs': fs}
+            kwargs = proj_kwargs.copy() #same as when fs < 1
         return self.getLookup(**kwargs).projectN(proj_kwargs)
 
     def fullDerivatives(self, t, y, drive, fs):
