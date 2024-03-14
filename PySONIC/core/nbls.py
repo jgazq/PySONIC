@@ -300,11 +300,11 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             proj_str += f'Cm0 = {si_format(Cm0)}F/m2'
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
         if fs < 1.: #why are a and f only included in filename if fs<1 and is fs left out? where is A??
-            kwargs = proj_kwargs.copy()
-            #kwargs['fs'] = None #why only include if 1?
+            kwargs = proj_kwargs.copy() #original line
+            #kwargs['fs'] = None #why only include if 1? #original line
         else:
-            #kwargs = {'fs': fs}
-            kwargs = proj_kwargs.copy() #same as when fs < 1
+            #kwargs = {'fs': fs} #original line
+            kwargs = proj_kwargs.copy() #same as when fs < 1 
         return self.getLookup(**kwargs).projectN(proj_kwargs)
 
     def fullDerivatives(self, t, y, drive, fs):
