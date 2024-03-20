@@ -24,7 +24,7 @@ class PointNeuron(Model):
 
     tscale = 'ms'     # relevant temporal scale of the model
     simkey = 'ESTIM'  # keyword used to characterize simulations made with this model
-    celsius = 36.0    # Temperature (Celsius)
+    celsius = 37.0    # Temperature (Celsius)
     T = celsius + CELSIUS_2_KELVIN
 
     def __repr__(self):

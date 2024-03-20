@@ -325,8 +325,8 @@ class PeriodicSolver(ODESolver):
         #print(f"ylast: {y_last[-5:]}\nyprec: {y_prec[-5:]} ###")
 
         # Evaluate ratios of RMSE between the two cycles / variation range over the last cycle
-        print(f"rmse: {rmse(y_last, y_prec, axis=0)} ###")
-        print(f"ptp: {np.ptp(y_last, axis=0)}, max = {np.max(y_last,axis=0)}, min = {np.min(y_last,axis=0)} ###")
+        #print(f"rmse: {rmse(y_last, y_prec, axis=0)} ###")
+        #print(f"ptp: {np.ptp(y_last, axis=0)}, max = {np.max(y_last,axis=0)}, min = {np.min(y_last,axis=0)} ###")
         ratios = rmse(y_last, y_prec, axis=0) / np.ptp(y_last, axis=0)#; print(f"ratios: {ratios} ###")
 
         # Classify solution as periodically stable only if all ratios are below critical threshold

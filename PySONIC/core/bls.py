@@ -85,7 +85,7 @@ class BilayerSonophore(Model):
     '''
 
     # BIOMECHANICAL PARAMETERS
-    T = 309.15       # Temperature (K)
+    T = 310.15       # Temperature (K)
     delta0 = 2.0e-9  # Thickness of the leaflet (m)
     Delta_ = 1.4e-9  # Initial gap between the two leaflets on a non-charged membrane at equil. (m)
     pDelta = 1.0e5   # Attraction/repulsion pressure coefficient (Pa)
@@ -541,7 +541,8 @@ class BilayerSonophore(Model):
             :param Z: leaflet apex deflection (m)
             :return: tension pressure (Pa)
         '''
-        ks = 0.24 #N/m^2, Lemaire (2019)
+        ks = 0.24 #N/m, Lemaire (2019)
+        #return (ks/self.curvrad(Z))*((Z/self.a)**2)
         return (2*ks*Z**3)/(self.a**2*(self.a**2+Z**2))
 
     def PtotQS(self, Z, ng, Qm, Pac, Pm_comp_method):
