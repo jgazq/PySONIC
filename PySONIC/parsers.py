@@ -433,7 +433,9 @@ class MechSimParser(SimParser):
             'freq': 500.0,  # kHz
             'amp': 100.0,  # kPa
             'charge': 0.,  # nC/cm2
-            'fs': 100.  # %
+            'fs': 100.,  # %
+            'Qstart' : 0, # nC/m2
+            'Qend' : -1 # nC/m2
         })
 
         self.factors.update({

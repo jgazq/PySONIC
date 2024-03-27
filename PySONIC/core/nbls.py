@@ -268,7 +268,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         if Qend is not None:
             fname += f'_{Qend}]'
         if Cm0 is not None:
-            fname += f'_{Cm0 * 1e2:.0f}uF_cm2'
+            pass#fname += f'_{Cm0 * 1e2:.0f}uF_cm2' #do not add Cm0 to LUT name as same LUT is loaded in for different Cm0 values
         if fs is not None:
             fname += f'_fs{fs:.2f}'
         if novertones > 0:
@@ -295,7 +295,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         proj_str = f'a = {si_format(self.a)}m, f = {si_format(f)}Hz, fs = {fs * 1e2:.0f}%'
         if Cm0:
             print(Cm0)
-            proj_kwargs['Cm0'] = 1.e-2 #TESTING -> replace with multiplication factor
+            proj_kwargs['Cm0'] = Cm0*1.e-2
             print(proj_kwargs['Cm0'])
             proj_str += f'Cm0 = {si_format(Cm0)}F/m2'
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
