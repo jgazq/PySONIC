@@ -294,9 +294,9 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         proj_kwargs = {'a': self.a, 'f': f, 'fs': fs} #BREAKPOINT
         proj_str = f'a = {si_format(self.a)}m, f = {si_format(f)}Hz, fs = {fs * 1e2:.0f}%'
         if Cm0:
-            print(Cm0)
+            print(f"Cm0 arg in getLookup2D: {Cm0}")
             proj_kwargs['Cm0'] = Cm0*1.e-2
-            print(proj_kwargs['Cm0'])
+            print(f"Cm0 proj kwarg in getLookup2D: {proj_kwargs['Cm0']}")
             proj_str += f'Cm0 = {si_format(Cm0)}F/m2'
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
         if fs < 1.: #why are a and f only included in filename if fs<1 and is fs left out? where is A??

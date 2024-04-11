@@ -331,21 +331,24 @@ class BilayerSonophore(Model):
         ''' Logarithm of relative sonophore deflection for a given deflection Z. '''
         return np.log((2 * Z + self.Delta) / self.Delta)
 
-    def capacitance(self, Z):
+    def capacitance(self, Z, Cm0=None):
         ''' Membrane capacitance
             (parallel-plate capacitor evaluated at average inter-layer distance)
 
             :param Z: leaflet apex deflection (m)
             :return: capacitance per unit area (F/m2)
         '''
+        Cm0 = Cm0 if Cm0 else self.Cm0
         if Z == 0.0:
-            return self.Cm0
+            return Cm0 
         else:
             Z2 = (self.a**2 - Z**2 - Z * self.Delta) / (2 * Z)
-            return self.Cm0 * self.Delta / self.a**2 * (Z + Z2 * self.logRelGap(Z))
+            return Cm0 * self.Delta / self.a**2 * (Z + Z2 * self.logRelGap(Z))
 
-    def v_capacitance(self, Z):
+    def v_capacitance(self, Z, Cm0=None):
         ''' Vectorized capacitance function '''
+        if Cm0: #use the given membrane capacitance if given
+            return np.array(list(map(self.capacitance, Z, [Cm0]*len(Z))))
         return np.array(list(map(self.capacitance, Z)))
 
     def derCapacitance(self, Z, U):
@@ -576,7 +579,7 @@ class BilayerSonophore(Model):
         '''
         Zbounds = (self.Zmin, self.a)
         PQS = [self.PtotQS(x, ng, Qm, Pac, Pm_comp_method) for x in Zbounds]
-        print(f"PQS: {PQS}")
+        #print(f"PQS: {PQS}")
         if not (PQS[0] > 0 > PQS[1]):
             s = 'P_QS not changing sign within [{:.2f}, {:.2f}] nm interval: '.format(
                 *np.array(Zbounds) * 1e9)

@@ -93,8 +93,8 @@ class TimeSeries(pd.DataFrame):
         self.loc[-1] = self.iloc[0]  # repeat first row
         self.index = self.index + 1  # shift index
         self.sort_index(inplace=True)
-        self[self.time_key][0] = t0
-        self[self.stim_key][0] = 0
+        self.loc[0, self.time_key] = t0 #self[self.time_key][0] = t0
+        self.loc[0,self.stim_key] = 0 #self[self.stim_key][0] = 0
 
     def bound(self, tbounds):
         ''' Restrict all columns of dataframe to indexes corresponding to time values
