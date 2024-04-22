@@ -201,6 +201,12 @@ class NeuronalBilayerSonophore(BilayerSonophore):
                 #print(f'{Qm0} doesnt fall in the range of {new_bounds}')
                 effvars = {'V': 0}
                 effrates = self.pneuron.getZeroRates() #add zeroes in the LUT #POTENTIAL RISK
+
+                if novertones > 0:
+                    for i in range(1, novertones + 1):
+                        effvars[f'A_V{i}'] = 0
+                        effvars[f'phi_V{i}'] = 0
+
                 effvars.update(effrates) 
                 effvars_list.append(effvars)
                 continue

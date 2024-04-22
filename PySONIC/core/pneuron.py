@@ -268,8 +268,14 @@ class PointNeuron(Model):
     @classmethod
     def getEffRates(cls, Vm):
         ''' Compute array of effective rate constants for a given membrane potential vector. '''
-        #print(cls.effRates)
-        return {k: np.mean(np.vectorize(v)(Vm)) for k, v in cls.effRates().items()}
+        #print(f"eff rates eff rates:{cls.effRates().keys()}")
+        return {k: np.mean(np.vectorize(v)(Vm)) for k, v in cls.effRates().items()} #v is an gatex_mech method and Vm is the voltage over a whole period #BREAKPOINT run_lookups_MC.py
+    
+    @classmethod
+    def getZeroRates(cls):
+        ''' Compute 'empty' array of effective rate constants for a given membrane potential vector. '''
+        #print(f"zero rates eff rates:{cls.effRates().keys()}")
+        return {k: 0 for k, v in cls.effRates().items()} #v is an gatex_mech method and Vm is the voltage over a whole period #BREAKPOINT run_lookups_MC.py   
 
     def getLookup(self):
         ''' Get lookup of membrane potential rate constants interpolated along the neuron's
