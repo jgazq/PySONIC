@@ -305,7 +305,9 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             #print(f"Cm0 proj kwarg in getLookup2D: {proj_kwargs['Cm0']}")
             proj_str += f'Cm0 = {si_format(Cm0)}F/m2'
         else: #if no Cm0 distinction is made, just get the LUT for 0.01 (standard value)
-            proj_kwargs['Cm0'] = 1*1.e-2
+            pass #following 2 lines is put into comment as now the Cm0 variability is not as a reference but separate LUT
+                 #put next 2 lines in comment if Cm0_var2 = 1
+            proj_kwargs['Cm0'] = 2*1.e-2
             proj_str += f'Cm0 = {si_format(1)}F/m2'            
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
         if fs < 1.: #why are a and f only included in filename if fs<1 and is fs left out? where is A??

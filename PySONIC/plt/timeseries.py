@@ -7,6 +7,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 
 from ..postpro import detectSpikes, convertPeaksProperties
 from ..utils import *
@@ -418,7 +419,6 @@ class GroupedTimeSeries(TimeSeriesPlot):
                 pltscheme = self.pltscheme
             else:
                 pltscheme = model.pltScheme
-
             # Create figure
             fig, axes = self.createBackBone(pltscheme)
 
@@ -473,6 +473,15 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             fig.canvas.manager.set_window_title(model.filecode(meta))
 
+            # Save figure data to csv
+            directory = f'output_csv_archive\\{model.filecode(meta)}\\'
+            if not os.path.exists(directory):
+                os.mkdir(directory)
+            data.to_csv(f'{directory}{datetime.datetime.strftime(datetime.datetime.now(),"%Y_%m_%d_%H_%M_%S")}.csv')
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 5\\' + model.filecode(meta)
+            if not os.path.exists(directory):
+                os.mkdir(directory)           
+            plt.savefig(f'{directory}\\{datetime.datetime.strftime(datetime.datetime.now(),"%Y_%m_%d_%H_%M_%S")}.jpg')
             # Save figure if needed (automatic or checked)
             if save:
                 filecode = model.filecode(meta)
