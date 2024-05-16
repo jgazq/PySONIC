@@ -24,7 +24,7 @@ class Lookup:
 
     interp_choices = ('linear', 'quadratic', 'cubic', 'poly1', 'poly2', 'poly3')
 
-    def __init__(self, refs, tables, interp_method='linear', extrapolate=False):
+    def __init__(self, refs, tables, interp_method='linear', extrapolate=False, Q_ext = None):
         ''' Constructor.
 
             :param refs: dictionary of reference one-dimensional input vectors.
@@ -32,13 +32,16 @@ class Lookup:
             :param interp_method: interpolation method
             :param extrapolate: boolean stating whether tables can be extrapolated outside
                 of reference bounds
+            :param Q_ext: array containing the extended version of the membrane charge density
         '''
         self.refs = refs
         self.tables = tables
         self.interp_method = interp_method
         self.extrapolate = extrapolate
+        self.Q_ext = Q_ext
         for k, v in self.items():
             if v.shape != self.dims:
+                continue #POTENTIAL RISK
                 raise ValueError(
                     f'{k} Table dimensions {v.shape} does not match references {self.dims}')
 
@@ -144,7 +147,8 @@ class Lookup:
     def kwattrs(self):
         return {
             'interp_method': self.interp_method,
-            'extrapolate': self.extrapolate}
+            'extrapolate': self.extrapolate,
+            'Q_ext': self.Q_ext}
 
     def checkAgainst(self, other):
         ''' Check self object against another lookup object for compatibility. '''

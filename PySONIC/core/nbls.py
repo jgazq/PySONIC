@@ -289,8 +289,13 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         keep_tcomp = kwargs.pop('keep_tcomp', False)
         lookup_path = self.getLookupFilePath(*args, **kwargs)
         lkp = EffectiveVariablesLookup.fromPickle(lookup_path)
+        if 'Q_ext' in lkp.tables.keys():
+            lkp.Q_ext = lkp.tables['Q_ext']
+            del lkp.tables['Q_ext'] 
         if not keep_tcomp:
             del lkp.tables['tcomp']
+            if 'tcomp2' in lkp.tables.keys():
+                del lkp.tables['tcomp2']
         return lkp
 
     def getLookup2D(self, f, fs, Cm0=None):
@@ -307,8 +312,8 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         else: #if no Cm0 distinction is made, just get the LUT for 0.01 (standard value)
             pass #following 2 lines is put into comment as now the Cm0 variability is not as a reference but separate LUT
                  #put next 2 lines in comment if Cm0_var2 = 1
-            proj_kwargs['Cm0'] = 2*1.e-2
-            proj_str += f'Cm0 = {si_format(1)}F/m2'            
+            # proj_kwargs['Cm0'] = 1*1.e-2
+            # proj_str += f'Cm0 = {si_format(1)}F/m2'            
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
         if fs < 1.: #why are a and f only included in filename if fs<1 and is fs left out? where is A??
             kwargs = proj_kwargs.copy() #original line

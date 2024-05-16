@@ -473,7 +473,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             fig.canvas.manager.set_window_title(model.filecode(meta))
 
-            # Save figure data to csv
+            # Save figure data to csv and figure to jpg
             directory = f'output_csv_archive\\{model.filecode(meta)}\\'
             if not os.path.exists(directory):
                 os.mkdir(directory)
