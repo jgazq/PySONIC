@@ -9,6 +9,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import datetime
 
+import sys
+sys.path.append(r'C:\Users\jgazquez\RealSONIC')
+import tempFunctions as tf
+import inspect
+import re
+
 from ..postpro import detectSpikes, convertPeaksProperties
 from ..utils import *
 from .pltutils import *
@@ -371,7 +377,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
     def render(self, fs=10, lw=2, labels=None, colors=None, lines=None, patches='one', save=False,
                outputdir=None, fig_ext='png', frequency=1, spikes='none', trange=None,
-               prettify=False):
+               prettify=False, fiber = None, ref_loc=None):
         ''' Render plot.
 
             :param fs: labels fontsize
@@ -473,15 +479,50 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             fig.canvas.manager.set_window_title(model.filecode(meta))
 
+            # Add currents to data
+            curr_add, curr_failed = [], []
+            dist_2_soma = np.sqrt((ref_loc[0] - fiber.loc_soma[0])**2 + (ref_loc[1] - fiber.loc_soma[1])**2 + (ref_loc[2] - fiber.loc_soma[2])**2)
+            gdict = tf.read_gbars(r'C:\Users\jgazquez\RealSONIC\\'+fiber.folder,dist_2_soma)
+            gdict_sec = gdict[tf.tc.g_dict_map[re.sub(r'[0-9]', '', self.section_id)]]
+            for curr, curr_lambda in fiber.pneuron.currents().items():
+                nargs = len(inspect.signature(eval(f'fiber.pneuron.{curr}')).parameters) #number of arguments that are needed for calling the method
+                try:
+                    suffix = curr.split('_')[-1]
+                    x = {f'm_{suffix}': data[("m", suffix)]}
+                    if nargs > 3:
+                        if nargs != 4:
+                            TypeError('More than 4 arguments for a cls.i method?')
+                        x[f'h_{suffix}'] = data[("h", suffix)]
+                    for e,f in gdict_sec.items():
+                        if re.sub(r'_', '', e) == 'g'+suffix.lower()+'bar':
+                            g_bar = f
+                            print(curr,g_bar)
+                            break
+                    #x = {f'm_{suffix}': data[("m", suffix)], f'h_{suffix}': data[("h", suffix)]}
+                    data[curr] = curr_lambda(data['Vm'],x, g_bar)
+                    curr_add.append(curr)
+                except:
+                    curr_failed.append(curr)
+            print(f'Following currents are added to the dataframe: {curr_add}')
+            print(f'Following currents failed to be added: {curr_failed}')
+
             # Save figure data to csv and figure to jpg
-            directory = f'output_csv_archive\\{model.filecode(meta)}\\'
-            if not os.path.exists(directory):
-                os.mkdir(directory)
-            data.to_csv(f'{directory}{datetime.datetime.strftime(datetime.datetime.now(),"%Y_%m_%d_%H_%M_%S")}.csv')
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 5\\' + model.filecode(meta)
-            if not os.path.exists(directory):
-                os.mkdir(directory)           
-            plt.savefig(f'{directory}\\{datetime.datetime.strftime(datetime.datetime.now(),"%Y_%m_%d_%H_%M_%S")}.jpg')
+            now = datetime.datetime.now()
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 6\\'
+            directorycsv = f'{directory}csv\\{model.filecode(meta)}'
+            if not os.path.exists(directorycsv):
+                os.mkdir(directorycsv)
+            data.to_csv(f'{directorycsv}\\{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.csv')
+            directoryjpg = directory + model.filecode(meta)
+            if not os.path.exists(directoryjpg):
+                os.mkdir(directoryjpg)      
+            # directoryjpg_ext = f'{directoryjpg}_ext'
+            # if not os.path.exists(directoryjpg_ext):
+            #     os.mkdir(directoryjpg_ext)        
+            plt.savefig(f'{directoryjpg}\\{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.jpg')
+            plt.savefig(f'{directory}\\all\\{model.filecode(meta)}_{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.jpg')
+            tf.plot_astim(f'{directorycsv}\\{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.csv', section_id=self.section_id)           
+
             # Save figure if needed (automatic or checked)
             if save:
                 filecode = model.filecode(meta)

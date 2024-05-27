@@ -144,7 +144,7 @@ class PointNeuron(Model):
                 'func': f"{cname}({', '.join([f'{wl}{a}{wr}' for a in cargs])})"
             }
             for var in cargs:
-                if var != 'Vm':
+                if var != 'Vm' and 'bar' not in var: #g_bar is added as an argument but doesn't need to be included in this list
                     pltvars[var] = {
                         'desc': cls.states[var],
                         'label': var,

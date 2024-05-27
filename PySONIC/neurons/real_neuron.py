@@ -3,7 +3,7 @@
 # @Email: theo.lemaire@epfl.ch
 # @Date:   2019-06-11 15:58:38
 # @Last Modified by:   Joaquin Gazquez
-# @Last Modified time: 2024-03-26 16:39:05
+# @Last Modified time: 2024-05-24 16:28:16
                    
 import numpy as np
 from neuron import h
@@ -985,7 +985,7 @@ class RealisticNeuron(PointNeuron):
 
     # ------------------------------ Membrane currents ------------------------------
     @classmethod
-    def i_Ca(cls,m_Ca,h_Ca,Vm):
+    def i_Ca(cls,m_Ca,h_Ca,Vm,gcabar = 0.00001):
         ''' iCa current '''
         v = Vm
         celsius = 37
@@ -994,20 +994,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_Ca #
         h = h_Ca #
-        gcabar = 0.00001
         gca = gcabar*m*m*h
         ica = gca*(v-eca)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gcabar', 'gca', 'ica']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ica
 
     @classmethod
-    def i_CaHVA(cls,m_CaHVA,h_CaHVA,Vm):
+    def i_CaHVA(cls,m_CaHVA,h_CaHVA,Vm,gca_hvabar = 0.00001):
         ''' iCaHVA current '''
         v = Vm
         celsius = 37
@@ -1016,20 +1009,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_CaHVA #
         h = h_CaHVA #
-        gca_hvabar = 0.00001
         gca = gca_hvabar*m*m*h
         ica = gca*(v-eca)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gca_hvabar', 'gca', 'ica']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ica
 
     @classmethod
-    def i_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm):
+    def i_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm,gca_lvastbar = 0.00001):
         ''' iCaLVAst current '''
         v = Vm
         celsius = 37
@@ -1038,20 +1024,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_CaLVAst #
         h = h_CaLVAst #
-        gca_lvastbar = 0.00001
         gca_lvast = gca_lvastbar*m*m*h
         ica = gca_lvast*(v-eca)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gca_lvastbar', 'gca_lvast', 'ica']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ica
 
     @classmethod
-    def i_Ih(cls,m_Ih,Vm):
+    def i_Ih(cls,m_Ih,Vm,gihbar = 0.00001):
         ''' iIh current '''
         v = Vm
         celsius = 37
@@ -1059,21 +1038,14 @@ class RealisticNeuron(PointNeuron):
         ena = 50.0
         eca = 132.4579341637009
         m = m_Ih #
-        gihbar = 0.00001
         ehcn =  -45.0
         gih = gihbar*m
         ihcn = gih*(v-ehcn)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'gihbar', 'ehcn', 'gih', 'ihcn']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ihcn
 
     @classmethod
-    def i_Im(cls,m_Im,Vm):
+    def i_Im(cls,m_Im,Vm,gimbar = 0.00001):
         ''' iIm current '''
         v = Vm
         celsius = 37
@@ -1081,20 +1053,13 @@ class RealisticNeuron(PointNeuron):
         ena = 50.0
         eca = 132.4579341637009
         m = m_Im #
-        gimbar = 0.00001
         gim = gimbar*m
         ik = gim*(v-ek)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'gimbar', 'gim', 'ik']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ik
 
     @classmethod
-    def i_KdShu2007(cls,m_KdShu2007,h_KdShu2007,Vm):
+    def i_KdShu2007(cls,m_KdShu2007,h_KdShu2007,Vm,gkbar = 0.1):
         ''' iKdShu2007 current '''
         v = Vm
         celsius = 37
@@ -1103,7 +1068,6 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_KdShu2007 #
         h = h_KdShu2007 #
-        gkbar = 0.1
         ek = -100	            
         vhalfm=-43
         km=8
@@ -1111,17 +1075,11 @@ class RealisticNeuron(PointNeuron):
         kh=7.3
         q10=2.3
         ik = gkbar * m*h*(v-ek)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gkbar', 'ek', 'vhalfm', 'km', 'vhalfh', 'kh', 'q10', 'ik']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ik
 
     @classmethod
-    def i_KPst(cls,m_KPst,h_KPst,Vm):
+    def i_KPst(cls,m_KPst,h_KPst,Vm,gk_pstbar = 0.00001):
         ''' iKPst current '''
         v = Vm
         celsius = 37
@@ -1130,20 +1088,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_KPst #
         h = h_KPst #
-        gk_pstbar = 0.00001
         gk_pst = gk_pstbar*m*m*h
         ik = gk_pst*(v-ek)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gk_pstbar', 'gk_pst', 'ik']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ik
 
     @classmethod
-    def i_KTst(cls,m_KTst,h_KTst,Vm):
+    def i_KTst(cls,m_KTst,h_KTst,Vm,gk_tstbar = 0.00001):
         ''' iKTst current '''
         v = Vm
         celsius = 37
@@ -1152,20 +1103,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_KTst #
         h = h_KTst #
-        gk_tstbar = 0.00001
         gk_tst = gk_tstbar*(m**4)*h
         ik = gk_tst*(v-ek)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gk_tstbar', 'gk_tst', 'ik']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ik
 
     @classmethod
-    def i_NapEt2(cls,m_NapEt2,h_NapEt2,Vm):
+    def i_NapEt2(cls,m_NapEt2,h_NapEt2,Vm,gnap_et2bar = 0.00001):
         ''' iNapEt2 current '''
         v = Vm
         celsius = 37
@@ -1174,20 +1118,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_NapEt2 #
         h = h_NapEt2 #
-        gnap_et2bar = 0.00001
         gnap_et2 = gnap_et2bar*m*m*m*h
         ina = gnap_et2*(v-ena)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gnap_et2bar', 'gnap_et2', 'ina']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ina
 
     @classmethod
-    def i_NaTat(cls,m_NaTat,h_NaTat,Vm):
+    def i_NaTat(cls,m_NaTat,h_NaTat,Vm,gnata_tbar = 0.00001):
         ''' iNaTat current '''
         v = Vm
         celsius = 37
@@ -1196,20 +1133,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_NaTat #
         h = h_NaTat #
-        gnata_tbar = 0.00001
         gnata_t = gnata_tbar*m*m*m*h
         ina = gnata_t*(v-ena)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gnata_tbar', 'gnata_t', 'ina']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ina
 
     @classmethod
-    def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm):
+    def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0.00001):
         ''' iNaTs2t current '''
         v = Vm
         celsius = 37
@@ -1218,20 +1148,13 @@ class RealisticNeuron(PointNeuron):
         eca = 132.4579341637009
         m = m_NaTs2t #
         h = h_NaTs2t #
-        gnats2_tbar = 0.00001
         gnats2_t = gnats2_tbar*m*m*m*h
         ina = gnats2_t*(v-ena)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'h', 'gnats2_tbar', 'gnats2_t', 'ina']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ina
 
     @classmethod
-    def i_SKv31(cls,m_SKv31,Vm):
+    def i_SKv31(cls,m_SKv31,Vm,gskv3_1bar = 0.00001):
         ''' iSKv31 current '''
         v = Vm
         celsius = 37
@@ -1239,31 +1162,24 @@ class RealisticNeuron(PointNeuron):
         ena = 50.0
         eca = 132.4579341637009
         m = m_SKv31 #
-        gskv3_1bar = 0.00001
         gskv3_1 = gskv3_1bar*m
         ik = gskv3_1*(v-ek)
-        vars=['v', 'celsius', 'ek', 'ena', 'eca', 'm', 'gskv3_1bar', 'gskv3_1', 'ik']
 
-        currents = [e for e in vars if (e.startswith('i') or e.startswith('I'))]
-        print(currents)
-        if currents:
-            return eval(vars[currents[0]])
-        else:
-            return 0
+        return ik
 
     @classmethod
     def currents(cls):
         return {
-			'i_Ca': lambda Vm, x: cls.i_Ca(x['m_Ca'], x['h_Ca'], Vm),
-			'i_CaHVA': lambda Vm, x: cls.i_CaHVA(x['m_CaHVA'], x['h_CaHVA'], Vm),
-			'i_CaLVAst': lambda Vm, x: cls.i_CaLVAst(x['m_CaLVAst'], x['h_CaLVAst'], Vm),
-			'i_Ih': lambda Vm, x: cls.i_Ih(x['m_Ih'], Vm),
-			'i_Im': lambda Vm, x: cls.i_Im(x['m_Im'], Vm),
-			'i_KdShu2007': lambda Vm, x: cls.i_KdShu2007(x['m_KdShu2007'], x['h_KdShu2007'], Vm),
-			'i_KPst': lambda Vm, x: cls.i_KPst(x['m_KPst'], x['h_KPst'], Vm),
-			'i_KTst': lambda Vm, x: cls.i_KTst(x['m_KTst'], x['h_KTst'], Vm),
-			'i_NapEt2': lambda Vm, x: cls.i_NapEt2(x['m_NapEt2'], x['h_NapEt2'], Vm),
-			'i_NaTat': lambda Vm, x: cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm),
-			'i_NaTs2t': lambda Vm, x: cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm),
-			'i_SKv31': lambda Vm, x: cls.i_SKv31(x['m_SKv31'], Vm),
+			'i_Ca': lambda Vm, x, g_bar: cls.i_Ca(x['m_Ca'], x['h_Ca'], Vm) if g_bar is None else cls.i_Ca(x['m_Ca'], x['h_Ca'], Vm, g_bar),
+			'i_CaHVA': lambda Vm, x, g_bar: cls.i_CaHVA(x['m_CaHVA'], x['h_CaHVA'], Vm) if g_bar is None else cls.i_CaHVA(x['m_CaHVA'], x['h_CaHVA'], Vm, g_bar),
+			'i_CaLVAst': lambda Vm, x, g_bar: cls.i_CaLVAst(x['m_CaLVAst'], x['h_CaLVAst'], Vm) if g_bar is None else cls.i_CaLVAst(x['m_CaLVAst'], x['h_CaLVAst'], Vm, g_bar),
+			'i_Ih': lambda Vm, x, g_bar: cls.i_Ih(x['m_Ih'], Vm) if g_bar is None else cls.i_Ih(x['m_Ih'], Vm, g_bar),
+			'i_Im': lambda Vm, x, g_bar: cls.i_Im(x['m_Im'], Vm) if g_bar is None else cls.i_Im(x['m_Im'], Vm, g_bar),
+			'i_KdShu2007': lambda Vm, x, g_bar: cls.i_KdShu2007(x['m_KdShu2007'], x['h_KdShu2007'], Vm) if g_bar is None else cls.i_KdShu2007(x['m_KdShu2007'], x['h_KdShu2007'], Vm, g_bar),
+			'i_KPst': lambda Vm, x, g_bar: cls.i_KPst(x['m_KPst'], x['h_KPst'], Vm) if g_bar is None else cls.i_KPst(x['m_KPst'], x['h_KPst'], Vm, g_bar),
+			'i_KTst': lambda Vm, x, g_bar: cls.i_KTst(x['m_KTst'], x['h_KTst'], Vm) if g_bar is None else cls.i_KTst(x['m_KTst'], x['h_KTst'], Vm, g_bar),
+			'i_NapEt2': lambda Vm, x, g_bar: cls.i_NapEt2(x['m_NapEt2'], x['h_NapEt2'], Vm) if g_bar is None else cls.i_NapEt2(x['m_NapEt2'], x['h_NapEt2'], Vm, g_bar),
+			'i_NaTat': lambda Vm, x, g_bar: cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm) if g_bar is None else cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm, g_bar),
+			'i_NaTs2t': lambda Vm, x, g_bar: cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm) if g_bar is None else cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm, g_bar),
+			'i_SKv31': lambda Vm, x, g_bar: cls.i_SKv31(x['m_SKv31'], Vm) if g_bar is None else cls.i_SKv31(x['m_SKv31'], Vm, g_bar),
         }
