@@ -430,7 +430,7 @@ class PointNeuron(Model):
     @property
     def Qbounds(self):
         ''' Determine bounds of membrane charge physiological range for a given neuron. '''
-        return np.array([np.round(self.Vm0 - 35.0), 50.0]) * self.Cm0 * 1e-3  # C/m2
+        return np.array([np.round(self.Vm0 - 35.0), 50.0]) * self.Cm0 * 1e-3  # C/m2 (mC/cm2 * 1e3 -> C/m2)
 
     @classmethod
     def isVoltageGated(cls, state):

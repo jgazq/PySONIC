@@ -521,7 +521,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
             #     os.mkdir(directoryjpg_ext)        
             plt.savefig(f'{directoryjpg}\\{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.jpg')
             plt.savefig(f'{directory}\\all\\{model.filecode(meta)}_{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.jpg')
-            tf.plot_astim(f'{directorycsv}\\{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.csv', section_id=self.section_id)           
+            tf.plot_astim(f'{directorycsv}\\{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}.csv')           
 
             # Save figure if needed (automatic or checked)
             if save:
