@@ -400,7 +400,6 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
         figs = []
         for output in self.outputs:
-
             # Load data and extract model
             try:
                 data, meta = self.getData(output, frequency, trange)
@@ -508,7 +507,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             # Save figure data to csv and figure to jpg
             now = datetime.datetime.now()
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 6\\'
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 7\\'
             directorycsv = f'{directory}csv\\{model.filecode(meta)}'
             if not os.path.exists(directorycsv):
                 os.mkdir(directorycsv)
