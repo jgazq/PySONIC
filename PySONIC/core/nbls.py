@@ -263,6 +263,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             fname = f'{self.pneuron.lookup_name}_lookups'
         except AttributeError:
             fname = f'{self.pneuron.name}_lookups'
+        return f'{fname}.pkl' #just use always the same lookup? why make a file for every combination of parameters
         if a is not None:
             fname += f'_{a * 1e9:.0f}nm'
         if f is not None:

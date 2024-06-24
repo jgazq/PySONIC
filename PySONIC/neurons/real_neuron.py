@@ -3,7 +3,7 @@
 # @Email: theo.lemaire@epfl.ch
 # @Date:   2019-06-11 15:58:38
 # @Last Modified by:   Joaquin Gazquez
-# @Last Modified time: 2024-05-24 16:28:16
+# @Last Modified time: 2024-06-20 16:19:54
                    
 import numpy as np
 from neuron import h
@@ -25,25 +25,6 @@ class RealisticNeuron(PointNeuron):
     # Resting parameters
     Cm0 = 1e-2   # Membrane capacitance (F/m2)
     Vm0 = -75  # Membrane potential (mV)
-
-         
-    # Reversal potentials (mV)
-    #TODO
-         
-    # Maximal channel conductances (S/m2)
-    gskv3_1bar = 1025.17
-    gsk_e2bar = 994.3299999999999
-    gca_hvabar = 3.7399999999999998
-    gnats2_tbar = 9267.05
-    gihbar = 0.8
-    gca_lvastbar = 7.78
-         
-    # Additional parameters
-    VT = -56.2  # Spike threshold adjustment parameter (mV)
-    dist_2_soma = 20 # Distance from the considered segment to the soma (um?)
-
-    mod_files, mod_names = tf.read_mod("mechanisms/")
-    g_dict = tf.read_gbars("cells/"+"L23_PC_cADpyr229_2"+"/",dist_2_soma)
 
     # ------------------------------ States names & descriptions ------------------------------
     states = {
@@ -1168,6 +1149,17 @@ class RealisticNeuron(PointNeuron):
         return ik
 
     @classmethod
+    def i_pas(cls, Vm):
+        ''' ipas current '''
+        e_pas  = -75
+        ra  = 100
+        cm  = 1
+        g_pas  = 3e-05
+        ipas = g_pas*(Vm-e_pas)
+
+        return ipas
+
+    @classmethod
     def currents(cls):
         return {
 			'i_Ca': lambda Vm, x, g_bar: cls.i_Ca(x['m_Ca'], x['h_Ca'], Vm) if g_bar is None else cls.i_Ca(x['m_Ca'], x['h_Ca'], Vm, g_bar),
@@ -1182,4 +1174,5 @@ class RealisticNeuron(PointNeuron):
 			'i_NaTat': lambda Vm, x, g_bar: cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm) if g_bar is None else cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm, g_bar),
 			'i_NaTs2t': lambda Vm, x, g_bar: cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm) if g_bar is None else cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm, g_bar),
 			'i_SKv31': lambda Vm, x, g_bar: cls.i_SKv31(x['m_SKv31'], Vm) if g_bar is None else cls.i_SKv31(x['m_SKv31'], Vm, g_bar),
+			'i_pas': lambda Vm: cls.i_pas(Vm),
         }

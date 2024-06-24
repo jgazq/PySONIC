@@ -223,7 +223,7 @@ class CustomProtocol(TimeProtocol):
 
 class PulsedProtocol(TimeProtocol):
 
-    def __init__(self, tstim, toffset, PRF=100., DC=1., tstart=0.1, modfactor=1.):
+    def __init__(self, tstim, toffset, PRF=100., DC=1., tstart=0.01, modfactor=1.):
         ''' Class constructor.
 
             :param tstim: pulse duration (s)
@@ -413,7 +413,7 @@ class PulsedProtocol(TimeProtocol):
 
 class BurstProtocol(PulsedProtocol):
 
-    def __init__(self, tburst, PRF=100., DC=1., BRF=None, nbursts=1, tstart=0., modfactor=1.):
+    def __init__(self, tburst, PRF=100., DC=1., BRF=None, nbursts=1, tstart=0.01, modfactor=1.):
         ''' Class constructor.
 
             :param tburst: burst duration (s)
