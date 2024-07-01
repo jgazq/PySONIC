@@ -516,7 +516,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             # Save figure data to csv and figure to jpg
             now = datetime.datetime.now()
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 7\\'
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 8\\'
             directorycsv = f'{directory}csv\\{model.filecode(meta)}'
             filename = f'{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}' if 'section_id' in dir(self) else datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")
             if not os.path.exists(directorycsv):
@@ -530,7 +530,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
             #     os.mkdir(directoryjpg_ext)        
             plt.savefig(f'{directoryjpg}\\{filename}.jpg')
             plt.savefig(f'{directory}\\all\\{model.filecode(meta)}_{filename}.jpg')
-            tf.plot_astim2(f'{directorycsv}\\{filename}.csv')           
+            tf.plot_astim2(f'{directorycsv}\\{filename}.csv',folder=directory)           
 
             # Save figure if needed (automatic or checked)
             if save:
