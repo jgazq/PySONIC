@@ -300,6 +300,7 @@ class PointNeuron(Model):
             :param states: states of ion channels gating and related variables
             :return: current per unit area (mA/m2)
         '''
+        #g_bar = None #default g_bar value is used
         return sum([cfunc(Vm, states) for cfunc in cls.currents().values()])
 
     @classmethod

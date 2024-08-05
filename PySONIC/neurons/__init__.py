@@ -20,6 +20,7 @@ from .sundt import *
 from .mrg import *
 from .pas import *
 from .real_neuron import * #RealisticNeuron
+from .soma import * #Soma section of RealisticNeuron
 #from .real_neuron_dyn import * #RealisticDynNeuron
 
 

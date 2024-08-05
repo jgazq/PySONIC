@@ -290,7 +290,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         keep_tcomp = kwargs.pop('keep_tcomp', False)
         lookup_path = self.getLookupFilePath(*args, **kwargs)
         lkp = EffectiveVariablesLookup.fromPickle(lookup_path)
-        if 'Q_ext' in lkp.tables.keys():
+        if 'Q_ext' in lkp.tables.keys(): #Q_ext is used if Cm0 variations are allowed
             lkp.Q_ext = lkp.tables['Q_ext']
             del lkp.tables['Q_ext'] 
         if not keep_tcomp:

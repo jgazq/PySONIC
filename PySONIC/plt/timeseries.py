@@ -417,6 +417,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             # Check plot scheme if provided, otherwise generate it
             pltvars = model.getPltVars()
+            #print(f"pltvars:{pltvars}")
             if self.pltscheme is not None:
                 for key in list(sum(list(self.pltscheme.values()), [])):
                     if key not in pltvars:
@@ -428,6 +429,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
             fig, axes = self.createBackBone(pltscheme)
 
             # Loop through each subgraph
+            #print(f'pltscheme.items(): {pltscheme.items()}')
             for ax, (grouplabel, keys) in zip(axes, pltscheme.items()):
                 ax_legend_spikes = False
 
@@ -478,7 +480,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             fig.canvas.manager.set_window_title(model.filecode(meta))
 
-            ABERRA = 1
+            ABERRA = 0
             if ABERRA:
                 # Add currents to data
                 curr_add, curr_failed = [], []
@@ -516,7 +518,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             # Save figure data to csv and figure to jpg
             now = datetime.datetime.now()
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 8\\'
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 9\\'
             directorycsv = f'{directory}csv\\{model.filecode(meta)}'
             filename = f'{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}' if 'section_id' in dir(self) else datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")
             if not os.path.exists(directorycsv):

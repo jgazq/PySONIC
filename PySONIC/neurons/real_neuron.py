@@ -1174,5 +1174,5 @@ class RealisticNeuron(PointNeuron):
 			'i_NaTat': lambda Vm, x, g_bar: cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm) if g_bar is None else cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm, g_bar),
 			'i_NaTs2t': lambda Vm, x, g_bar: cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm) if g_bar is None else cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm, g_bar),
 			'i_SKv31': lambda Vm, x, g_bar: cls.i_SKv31(x['m_SKv31'], Vm) if g_bar is None else cls.i_SKv31(x['m_SKv31'], Vm, g_bar),
-			'i_pas': lambda Vm: cls.i_pas(Vm),
+			'i_pas': lambda Vm, x, g_bar: cls.i_pas(Vm),
         }
