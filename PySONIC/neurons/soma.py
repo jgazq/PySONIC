@@ -406,7 +406,7 @@ class Soma(PointNeuron):
         return ica
 
     @classmethod
-    def i_Ih(cls,m_Ih,Vm,gihbar = 0.000080 * 1e4):
+    def i_Ih(cls,m_Ih,Vm,gihbar = 0):#0.000080 * 1e4):
         ''' iIh current '''
         v = Vm
         celsius = 37
@@ -421,7 +421,7 @@ class Soma(PointNeuron):
         return ihcn
 
     @classmethod
-    def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0.926705 * 1e4):
+    def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0):#0.926705 * 1e4):
         ''' iNaTs2t current '''
         v = Vm
         celsius = 37
@@ -436,7 +436,7 @@ class Soma(PointNeuron):
         return ina
 
     @classmethod
-    def i_SKv31(cls,m_SKv31,Vm,gskv3_1bar = 0.102517 * 1e4):
+    def i_SKv31(cls,m_SKv31,Vm,gskv3_1bar = 0):#0.102517 * 1e4):
         ''' iSKv31 current '''
         v = Vm
         celsius = 37

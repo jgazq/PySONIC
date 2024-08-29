@@ -323,6 +323,8 @@ class Lookup:
         '''
         assert self.ndims == 1, 'Cannot interpolate multi-dimensional object'
         if isinstance(ref_value, float):
+            # if 'V' == var_key:
+            #     print(ref_value,var_key)
             isWithin(self.inputs[0], ref_value, self.refbounds)
         return np.interp(ref_value, self.ref, self.tables[var_key], left=np.nan, right=np.nan)
 

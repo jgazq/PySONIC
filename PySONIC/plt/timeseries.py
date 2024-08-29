@@ -480,7 +480,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             fig.canvas.manager.set_window_title(model.filecode(meta))
 
-            ABERRA = 0
+            ABERRA = 0 
             if ABERRA:
                 # Add currents to data
                 curr_add, curr_failed = [], []
@@ -518,7 +518,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             # Save figure data to csv and figure to jpg
             now = datetime.datetime.now()
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 9\\'
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 11\\'
             directorycsv = f'{directory}csv\\{model.filecode(meta)}'
             filename = f'{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}' if 'section_id' in dir(self) else datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")
             if not os.path.exists(directorycsv):

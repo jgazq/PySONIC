@@ -586,7 +586,7 @@ class BilayerSonophore(Model):
             s += ', '.join([
                 f'P_QS({Z * 1e9:.2f} nm) = {si_format(P, 2)}Pa' for Z, P in zip(Zbounds, PQS)])
             raise ValueError(s)
-        return brentq(self.PtotQS, *Zbounds, args=(ng, Qm, Pac, Pm_comp_method), xtol=1e-16)
+        return brentq(self.PtotQS, *Zbounds, args=(ng, Qm, Pac, Pm_comp_method), xtol=1e-16) #returns the root on the 'x'-axis 
 
     def TEleaflet(self, Z):
         ''' Elastic tension in leaflet
