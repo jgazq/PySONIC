@@ -3,7 +3,7 @@
 # @Email: theo.lemaire@epfl.ch
 # @Date:   2019-06-11 15:58:38
 # @Last Modified by:   Joaquin Gazquez
-# @Last Modified time: 2024-06-20 16:19:54
+# @Last Modified time: 2024-09-03 15:50:53
                    
 import numpy as np
 from neuron import h
@@ -1154,7 +1154,7 @@ class RealisticNeuron(PointNeuron):
         e_pas  = -75
         ra  = 100
         cm  = 1
-        g_pas  = 3e-05
+        g_pas  = 3e-05 * 1e4 #S/cm2 -> S/m2
         ipas = g_pas*(Vm-e_pas)
 
         return ipas

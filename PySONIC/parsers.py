@@ -329,6 +329,8 @@ class Parser(ArgumentParser):
         render_args = {}
         if 'spikes' in args:
             render_args['spikes'] = args['spikes']
+        if 'neuron' in args:
+            render_args['fiber'] = args['neuron'][0]
         if args['compare']:
             if args['plot'] == ['all']:
                 logger.error('Specific variables must be specified for comparative plots')

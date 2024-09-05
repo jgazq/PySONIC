@@ -480,12 +480,13 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             fig.canvas.manager.set_window_title(model.filecode(meta))
 
-            ABERRA = 0 
+            ABERRA = 0 if str(fiber) == 'Soma' else 1
+            
             if ABERRA:
                 # Add currents to data
                 curr_add, curr_failed = [], []
                 dist_2_soma = np.sqrt((ref_loc[0] - fiber.loc_soma[0])**2 + (ref_loc[1] - fiber.loc_soma[1])**2 + (ref_loc[2] - fiber.loc_soma[2])**2) #calculate distance of section to soma
-                gdict = tf.read_gbars(r'C:\Users\jgazquez\RealSONIC\\'+fiber.folder,dist_2_soma) #get the g_dict based on the distance
+                gdict = tf.read_gbars(r'C:\Users\jgazquez\RealSONIC\\'+'cells\\'+'L23_PC_cADpyr229_2',dist_2_soma) #get the g_dict based on the distance
                 gdict_sec = gdict[tf.tc.g_dict_map[re.sub(r'[0-9]', '', self.section_id)]] #the type of section is used to get the g_dict as this is different for every section type
                 data['i_net'] = np.zeros(len(data['Vm']))
                 for curr, curr_lambda in fiber.pneuron.currents().items(): #iterate over all the currents listed in the specific pneuron
@@ -493,7 +494,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
                     try:
                         suffix = curr.split('_')[-1] #we determine the suffix of the current
                         if nargs == 1: #this is currently only in the case of the passive mechanism
-                            data[curr] = curr_lambda(data['Vm'])
+                            data[curr] = curr_lambda(data['Vm'], None, None)
                             curr_add.append(curr)
                             data['i_net'] += data[curr]
                             continue
@@ -516,9 +517,46 @@ class GroupedTimeSeries(TimeSeriesPlot):
                 print(f'Following currents are added to the dataframe: {curr_add}')
                 print(f'Following currents failed to be added: {curr_failed}')
 
+            else:
+                #try:
+                # Add currents to data
+                curr_add, curr_failed = [], []
+                dist_2_soma = 0
+                gdict = tf.read_gbars(r'C:\Users\jgazquez\RealSONIC\\'+'cells\\'+'L23_PC_cADpyr229_2',dist_2_soma) #get the g_dict based on the distance
+                gdict_sec = gdict[tf.tc.g_dict_map[re.sub(r'[0-9]', '', 'soma')]]
+                data['i_net'] = np.zeros(len(data['Vm']))
+                for curr, curr_lambda in fiber.currents().items(): #iterate over all the currents listed in the specific pneuron
+                    nargs = len(inspect.signature(eval(f'fiber.{curr}')).parameters) #number of arguments that are needed for calling the method
+                    print(nargs,curr)
+                    #try:
+                    suffix = curr.split('_')[-1] #we determine the suffix of the current
+                    if nargs == 1: #this is currently only in the case of the passive mechanism
+                        data[curr] = curr_lambda(data['Vm'], None)
+                        curr_add.append(curr)
+                        data['i_net'] += data[curr]
+                        continue
+                    x = {f'm_{suffix}': data[f'm_{suffix}']} #init of x, which always contains m and h if it exists
+                    if nargs > 3:
+                        if nargs != 4:
+                            TypeError('More than 4 arguments for a cls.i method?')
+                        x[f'h_{suffix}'] = data[f'h_{suffix}'] #add h if it is needed as an argument
+                    for e,f in gdict_sec.items(): #iterate over the different g-values
+                        if re.sub(r'_', '', e) == 'g'+suffix.lower()+'bar': #search for the gbar corresponding with the respective mechanism
+                            g_bar = f
+                            print(curr,g_bar)
+                            break #stop the for loop as the right gbar is found
+                    #x = {f'm_{suffix}': data[("m", suffix)], f'h_{suffix}': data[("h", suffix)]}
+                    data[curr] = curr_lambda(data['Vm'],x) #we add the array of the current to the dataframe with the help of Vm, m (, h) and g_bar
+                    curr_add.append(curr) #a list that keeps track of the currents that are added
+                    data['i_net'] += data[curr] #add current to the total net current
+                    # except:
+                    #     curr_failed.append(curr) #failed currents due to the lack of all the arguments that are needed for calculating the current
+                print(f'Following currents are added to the dataframe: {curr_add}')
+                print(f'Following currents failed to be added: {curr_failed}')
+
             # Save figure data to csv and figure to jpg
             now = datetime.datetime.now()
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 11\\'
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 12\\'
             directorycsv = f'{directory}csv\\{model.filecode(meta)}'
             filename = f'{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}' if 'section_id' in dir(self) else datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")
             if not os.path.exists(directorycsv):
