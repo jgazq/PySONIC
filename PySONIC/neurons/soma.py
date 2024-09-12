@@ -376,7 +376,7 @@ class Soma(PointNeuron):
 
     # ------------------------------ Membrane currents ------------------------------
     @classmethod
-    def i_CaHVA(cls,m_CaHVA,h_CaHVA,Vm,gca_hvabar = 0):#0.000374 * 1e4):
+    def i_CaHVA(cls,m_CaHVA,h_CaHVA,Vm,gca_hvabar = 0.000374 * 1e4):
         ''' iCaHVA current '''
         v = Vm
         celsius = 37
@@ -391,7 +391,7 @@ class Soma(PointNeuron):
         return ica
 
     @classmethod
-    def i_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm,gca_lvastbar = 0):#0.000778 * 1e4):
+    def i_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm,gca_lvastbar = 0.000778 * 1e4):
         ''' iCaLVAst current '''
         v = Vm
         celsius = 37
@@ -406,7 +406,7 @@ class Soma(PointNeuron):
         return ica
 
     @classmethod
-    def i_Ih(cls,m_Ih,Vm,gihbar = 0):#0.000080 * 1e4):
+    def i_Ih(cls,m_Ih,Vm,gihbar = 0.000080 * 1e4):
         ''' iIh current '''
         v = Vm
         celsius = 37
@@ -421,7 +421,7 @@ class Soma(PointNeuron):
         return ihcn
 
     @classmethod
-    def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0):#0.926705 * 1e4):
+    def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0.926705 * 1e4):
         ''' iNaTs2t current '''
         v = Vm
         celsius = 37
@@ -455,7 +455,7 @@ class Soma(PointNeuron):
         e_pas  = -75
         ra  = 100
         cm  = 1
-        g_pas  = 0#3e-05 * 1e4 #S/cm2 -> S/m2
+        g_pas  = 3e-05 * 1e4 #S/cm2 -> S/m2
         ipas = g_pas*(Vm-e_pas)
 
         return ipas

@@ -473,9 +473,9 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         }
         vars = ['t', 'stimstate', 'Qm', 'm_CaHVA', 'h_CaHVA', 'm_Ih', 'm_NaTs2t', 'h_NaTs2t', 'm_CaLVAst', 'h_CaLVAst', 'm_SKv31', 'Vm', 'Z', 'ng']
         post_offset = [0.108, 0.0, -0.000400373105086596, 0.004589412110363798, 0.5770412065061993, 0.010337599764162842, 0.057981322763697996, 0.3156960866522517, 0.845816063777979, 0.06121174753690382, 0.05402282597014584, -51.55260169481399, np.nan, np.nan]
-        for e,f in zip(vars,post_offset):
-            if e in y0:
-                y0[e] = f
+        # for e,f in zip(vars,post_offset):
+        #     if e in y0:
+        #         y0[e] = f
         print(f'y0 = {y0}')
 
         # Initialize solver and compute solution
