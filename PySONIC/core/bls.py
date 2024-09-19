@@ -843,3 +843,6 @@ class BilayerSonophore(Model):
 
     def getGammaLookup(self):
         return self.Cm_lkp.reduce(lambda x, **kwargs: np.ptp(x, **kwargs) / 2, 't')
+
+# a = BilayerSonophore(64*1e-9,1e-2,1e-2*-75) #'a', 'Cm0', and 'Qm0'
+# print(a.balancedefQS(0,1,0))

@@ -557,43 +557,44 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             elif str(fiber) == 'CorticalRS':
                 # Add currents to data
-                curr_add, curr_failed = [], []
-                dist_2_soma = 0
-                gdict = tf.read_gbars(r'C:\Users\jgazquez\RealSONIC\\'+'cells\\'+'L23_PC_cADpyr229_2',dist_2_soma) #get the g_dict based on the distance
-                gdict_sec = gdict[tf.tc.g_dict_map[re.sub(r'[0-9]', '', 'soma')]]
-                data['i_net'] = np.zeros(len(data['Vm']))
-                for curr, curr_lambda in fiber.currents().items(): #iterate over all the currents listed in the specific pneuron
-                    nargs = len(inspect.signature(eval(f'fiber.{curr}')).parameters) #number of arguments that are needed for calling the method
-                    print(nargs,curr)
-                    #try:
-                    suffix = curr[1:] #we determine the suffix of the current
-                    if nargs == 1: #this is currently only in the case of the passive mechanism
-                        data[curr] = curr_lambda(data['Vm'], None)
-                        curr_add.append(curr)
-                        data['i_net'] += data[curr]
-                        continue
-                    x = {f'm_{suffix}': data[f'm_{suffix}']} #init of x, which always contains m and h if it exists
-                    if nargs > 3:
-                        if nargs != 4:
-                            TypeError('More than 4 arguments for a cls.i method?')
-                        x[f'h_{suffix}'] = data[f'h_{suffix}'] #add h if it is needed as an argument
-                    for e,f in gdict_sec.items(): #iterate over the different g-values
-                        if re.sub(r'_', '', e) == 'g'+suffix.lower()+'bar': #search for the gbar corresponding with the respective mechanism
-                            g_bar = f
-                            print(curr,g_bar)
-                            break #stop the for loop as the right gbar is found
-                    #x = {f'm_{suffix}': data[("m", suffix)], f'h_{suffix}': data[("h", suffix)]}
-                    data[curr] = curr_lambda(data['Vm'],x) #we add the array of the current to the dataframe with the help of Vm, m (, h) and g_bar
-                    curr_add.append(curr) #a list that keeps track of the currents that are added
-                    data['i_net'] += data[curr] #add current to the total net current
-                    # except:
-                    #     curr_failed.append(curr) #failed currents due to the lack of all the arguments that are needed for calculating the current
-                print(f'Following currents are added to the dataframe: {curr_add}')
-                print(f'Following currents failed to be added: {curr_failed}')                
+                pass
+                # curr_add, curr_failed = [], []
+                # dist_2_soma = 0
+                # gdict = tf.read_gbars(r'C:\Users\jgazquez\RealSONIC\\'+'cells\\'+'L23_PC_cADpyr229_2',dist_2_soma) #get the g_dict based on the distance
+                # gdict_sec = gdict[tf.tc.g_dict_map[re.sub(r'[0-9]', '', 'soma')]]
+                # data['i_net'] = np.zeros(len(data['Vm']))
+                # for curr, curr_lambda in fiber.currents().items(): #iterate over all the currents listed in the specific pneuron
+                #     nargs = len(inspect.signature(eval(f'fiber.{curr}')).parameters) #number of arguments that are needed for calling the method
+                #     print(nargs,curr)
+                #     #try:
+                #     suffix = curr[1:] #we determine the suffix of the current
+                #     if nargs == 1: #this is currently only in the case of the passive mechanism
+                #         data[curr] = curr_lambda(data['Vm'], None)
+                #         curr_add.append(curr)
+                #         data['i_net'] += data[curr]
+                #         continue
+                #     x = {f'm_{suffix}': data[f'm_{suffix}']} #init of x, which always contains m and h if it exists
+                #     if nargs > 3:
+                #         if nargs != 4:
+                #             TypeError('More than 4 arguments for a cls.i method?')
+                #         x[f'h_{suffix}'] = data[f'h_{suffix}'] #add h if it is needed as an argument
+                #     for e,f in gdict_sec.items(): #iterate over the different g-values
+                #         if re.sub(r'_', '', e) == 'g'+suffix.lower()+'bar': #search for the gbar corresponding with the respective mechanism
+                #             g_bar = f
+                #             print(curr,g_bar)
+                #             break #stop the for loop as the right gbar is found
+                #     #x = {f'm_{suffix}': data[("m", suffix)], f'h_{suffix}': data[("h", suffix)]}
+                #     data[curr] = curr_lambda(data['Vm'],x) #we add the array of the current to the dataframe with the help of Vm, m (, h) and g_bar
+                #     curr_add.append(curr) #a list that keeps track of the currents that are added
+                #     data['i_net'] += data[curr] #add current to the total net current
+                #     # except:
+                #     #     curr_failed.append(curr) #failed currents due to the lack of all the arguments that are needed for calculating the current
+                # print(f'Following currents are added to the dataframe: {curr_add}')
+                # print(f'Following currents failed to be added: {curr_failed}')                
 
             # Save figure data to csv and figure to jpg
             now = datetime.datetime.now()
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 16\\'
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 17\\'
             directorycsv = f'{directory}csv\\{model.filecode(meta)}'
             filename = f'{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}' if 'section_id' in dir(self) else datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")
             if not os.path.exists(directorycsv):
@@ -607,7 +608,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
             #     os.mkdir(directoryjpg_ext)        
             plt.savefig(f'{directoryjpg}\\{filename}.jpg')
             plt.savefig(f'{directory}\\all\\{model.filecode(meta)}_{filename}.jpg')
-            tf.plot_astim2(f'{directorycsv}\\{filename}.csv',folder=directory)           
+            tf.plot_astim2(f'{directorycsv}\\{filename}.csv',folder=directory,save_fig=1)           
 
             # Save figure if needed (automatic or checked)
             if save:
