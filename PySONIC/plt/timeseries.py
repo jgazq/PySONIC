@@ -405,7 +405,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
                 data, meta = self.getData(output, frequency, trange)
             except ValueError:
                 continue
-            print(f'data: {data}')
+            #print(f'data: {data}')
             model = self.getModel(meta)
 
             # Extract time and stim pulses
@@ -486,11 +486,13 @@ class GroupedTimeSeries(TimeSeriesPlot):
             if ABERRA:
                 # Add currents to data
                 curr_add, curr_failed = [], []
+                cond_add, cond_failed = [], []
                 dist_2_soma = np.sqrt((ref_loc[0] - fiber.loc_soma[0])**2 + (ref_loc[1] - fiber.loc_soma[1])**2 + (ref_loc[2] - fiber.loc_soma[2])**2) #calculate distance of section to soma
                 gdict = tf.read_gbars(r'C:\Users\jgazquez\RealSONIC\\'+'cells\\'+'L23_PC_cADpyr229_2',dist_2_soma) #get the g_dict based on the distance
                 gdict_sec = gdict[tf.tc.g_dict_map[re.sub(r'[0-9]', '', self.section_id)]] #the type of section is used to get the g_dict as this is different for every section type
                 data['i_net'] = np.zeros(len(data['Vm']))
-                for curr, curr_lambda in fiber.pneuron.currents().items(): #iterate over all the currents listed in the specific pneuron
+                data['g_net'] = np.zeros(len(data['Vm']))
+                for (curr, curr_lambda),(cond, cond_lambda) in zip(fiber.pneuron.currents().items(),fiber.pneuron.conductances().items()): #iterate over all the currents listed in the specific pneuron
                     nargs = len(inspect.signature(eval(f'fiber.pneuron.{curr}')).parameters) #number of arguments that are needed for calling the method
                     try:
                         suffix = curr.split('_')[-1] #we determine the suffix of the current
@@ -513,6 +515,10 @@ class GroupedTimeSeries(TimeSeriesPlot):
                         data[curr] = curr_lambda(data['Vm'],x, g_bar) #we add the array of the current to the dataframe with the help of Vm, m (, h) and g_bar
                         curr_add.append(curr) #a list that keeps track of the currents that are added
                         data['i_net'] += data[curr] #add current to the total net current
+
+                        data[cond] = cond_lambda(data['Vm'],x, g_bar)
+                        cond_add.append(cond)
+                        data['g_net'] += data[cond]
                     except:
                         curr_failed.append(curr) #failed currents due to the lack of all the arguments that are needed for calculating the current
                 print(f'Following currents are added to the dataframe: {curr_add}')
@@ -594,7 +600,7 @@ class GroupedTimeSeries(TimeSeriesPlot):
 
             # Save figure data to csv and figure to jpg
             now = datetime.datetime.now()
-            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 17\\'
+            directory = r'C:\Users\jgazquez\OneDrive - UGent\PhD\Figures\self_made\run_realistic_astim output\try 21\\'
             directorycsv = f'{directory}csv\\{model.filecode(meta)}'
             filename = f'{datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")}_{self.section_id}' if 'section_id' in dir(self) else datetime.datetime.strftime(now,"%Y_%m_%d_%H_%M_%S")
             if not os.path.exists(directorycsv):

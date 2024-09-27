@@ -3,7 +3,7 @@
 # @Email: theo.lemaire@epfl.ch
 # @Date:   2019-06-11 15:58:38
 # @Last Modified by:   Joaquin Gazquez
-# @Last Modified time: 2024-09-03 15:50:53
+# @Last Modified time: 2024-09-25 16:49:15
                    
 import numpy as np
 from neuron import h
@@ -981,6 +981,22 @@ class RealisticNeuron(PointNeuron):
         return ica
 
     @classmethod
+    def g_Ca(cls,m_Ca,h_Ca,Vm,gcabar = 0.00001):
+        ''' gCa conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_Ca #
+        h = h_Ca #
+        gcabar = 0.00001
+        gca = gcabar*m*m*h
+        ica = gca*(v-eca)
+
+        return gca
+
+    @classmethod
     def i_CaHVA(cls,m_CaHVA,h_CaHVA,Vm,gca_hvabar = 0.00001):
         ''' iCaHVA current '''
         v = Vm
@@ -994,6 +1010,22 @@ class RealisticNeuron(PointNeuron):
         ica = gca*(v-eca)
 
         return ica
+
+    @classmethod
+    def g_CaHVA(cls,m_CaHVA,h_CaHVA,Vm,gca_hvabar = 0.00001):
+        ''' gCaHVA conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_CaHVA #
+        h = h_CaHVA #
+        gca_hvabar = 0.00001
+        gca = gca_hvabar*m*m*h
+        ica = gca*(v-eca)
+
+        return gca
 
     @classmethod
     def i_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm,gca_lvastbar = 0.00001):
@@ -1011,6 +1043,22 @@ class RealisticNeuron(PointNeuron):
         return ica
 
     @classmethod
+    def g_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm,gca_lvastbar = 0.00001):
+        ''' gCaLVAst conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_CaLVAst #
+        h = h_CaLVAst #
+        gca_lvastbar = 0.00001
+        gca_lvast = gca_lvastbar*m*m*h
+        ica = gca_lvast*(v-eca)
+
+        return gca_lvast
+
+    @classmethod
     def i_Ih(cls,m_Ih,Vm,gihbar = 0.00001):
         ''' iIh current '''
         v = Vm
@@ -1026,6 +1074,22 @@ class RealisticNeuron(PointNeuron):
         return ihcn
 
     @classmethod
+    def g_Ih(cls,m_Ih,Vm,gihbar = 0.00001):
+        ''' gIh conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_Ih #
+        gihbar = 0.00001
+        ehcn =  -45.0
+        gih = gihbar*m
+        ihcn = gih*(v-ehcn)
+
+        return gih
+
+    @classmethod
     def i_Im(cls,m_Im,Vm,gimbar = 0.00001):
         ''' iIm current '''
         v = Vm
@@ -1038,6 +1102,21 @@ class RealisticNeuron(PointNeuron):
         ik = gim*(v-ek)
 
         return ik
+
+    @classmethod
+    def g_Im(cls,m_Im,Vm,gimbar = 0.00001):
+        ''' gIm conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_Im #
+        gimbar = 0.00001
+        gim = gimbar*m
+        ik = gim*(v-ek)
+
+        return gim
 
     @classmethod
     def i_KdShu2007(cls,m_KdShu2007,h_KdShu2007,Vm,gkbar = 0.1):
@@ -1060,6 +1139,27 @@ class RealisticNeuron(PointNeuron):
         return ik
 
     @classmethod
+    def g_KdShu2007(cls,m_KdShu2007,h_KdShu2007,Vm,gkbar = 0.1):
+        ''' gKdShu2007 conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_KdShu2007 #
+        h = h_KdShu2007 #
+        gkbar = 0.1
+        ek = -100	            
+        vhalfm=-43
+        km=8
+        vhalfh=-67
+        kh=7.3
+        q10=2.3
+        ik = gkbar * m*h*(v-ek)
+
+        return None
+
+    @classmethod
     def i_KPst(cls,m_KPst,h_KPst,Vm,gk_pstbar = 0.00001):
         ''' iKPst current '''
         v = Vm
@@ -1073,6 +1173,22 @@ class RealisticNeuron(PointNeuron):
         ik = gk_pst*(v-ek)
 
         return ik
+
+    @classmethod
+    def g_KPst(cls,m_KPst,h_KPst,Vm,gk_pstbar = 0.00001):
+        ''' gKPst conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_KPst #
+        h = h_KPst #
+        gk_pstbar = 0.00001
+        gk_pst = gk_pstbar*m*m*h
+        ik = gk_pst*(v-ek)
+
+        return gk_pst
 
     @classmethod
     def i_KTst(cls,m_KTst,h_KTst,Vm,gk_tstbar = 0.00001):
@@ -1090,6 +1206,22 @@ class RealisticNeuron(PointNeuron):
         return ik
 
     @classmethod
+    def g_KTst(cls,m_KTst,h_KTst,Vm,gk_tstbar = 0.00001):
+        ''' gKTst conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_KTst #
+        h = h_KTst #
+        gk_tstbar = 0.00001
+        gk_tst = gk_tstbar*(m**4)*h
+        ik = gk_tst*(v-ek)
+
+        return gk_tst
+
+    @classmethod
     def i_NapEt2(cls,m_NapEt2,h_NapEt2,Vm,gnap_et2bar = 0.00001):
         ''' iNapEt2 current '''
         v = Vm
@@ -1103,6 +1235,22 @@ class RealisticNeuron(PointNeuron):
         ina = gnap_et2*(v-ena)
 
         return ina
+
+    @classmethod
+    def g_NapEt2(cls,m_NapEt2,h_NapEt2,Vm,gnap_et2bar = 0.00001):
+        ''' gNapEt2 conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_NapEt2 #
+        h = h_NapEt2 #
+        gnap_et2bar = 0.00001
+        gnap_et2 = gnap_et2bar*m*m*m*h
+        ina = gnap_et2*(v-ena)
+
+        return gnap_et2
 
     @classmethod
     def i_NaTat(cls,m_NaTat,h_NaTat,Vm,gnata_tbar = 0.00001):
@@ -1120,6 +1268,22 @@ class RealisticNeuron(PointNeuron):
         return ina
 
     @classmethod
+    def g_NaTat(cls,m_NaTat,h_NaTat,Vm,gnata_tbar = 0.00001):
+        ''' gNaTat conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_NaTat #
+        h = h_NaTat #
+        gnata_tbar = 0.00001
+        gnata_t = gnata_tbar*m*m*m*h
+        ina = gnata_t*(v-ena)
+
+        return gnata_t
+
+    @classmethod
     def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0.00001):
         ''' iNaTs2t current '''
         v = Vm
@@ -1133,6 +1297,22 @@ class RealisticNeuron(PointNeuron):
         ina = gnats2_t*(v-ena)
 
         return ina
+
+    @classmethod
+    def g_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0.00001):
+        ''' gNaTs2t conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_NaTs2t #
+        h = h_NaTs2t #
+        gnats2_tbar = 0.00001
+        gnats2_t = gnats2_tbar*m*m*m*h
+        ina = gnats2_t*(v-ena)
+
+        return gnats2_t
 
     @classmethod
     def i_SKv31(cls,m_SKv31,Vm,gskv3_1bar = 0.00001):
@@ -1149,15 +1329,40 @@ class RealisticNeuron(PointNeuron):
         return ik
 
     @classmethod
+    def g_SKv31(cls,m_SKv31,Vm,gskv3_1bar = 0.00001):
+        ''' gSKv31 conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_SKv31 #
+        gskv3_1bar = 0.00001
+        gskv3_1 = gskv3_1bar*m
+        ik = gskv3_1*(v-ek)
+
+        return gskv3_1
+
+    @classmethod
     def i_pas(cls, Vm):
         ''' ipas current '''
         e_pas  = -75
-        ra  = 100
-        cm  = 1
-        g_pas  = 3e-05 * 1e4 #S/cm2 -> S/m2
+        ra = 100
+        cm = 1
+        g_pas = 3e-05 * 1e4 #S/cm2 -> S/m2 
         ipas = g_pas*(Vm-e_pas)
 
         return ipas
+
+    @classmethod
+    def g_pas(cls, Vm):
+        ''' gpas conductance '''
+        e_pas  = -75
+        ra = 100
+        cm = 1
+        g_pas = 3e-05 * 1e4 #S/cm2 -> S/m2 
+
+        return g_pas
 
     @classmethod
     def currents(cls):
@@ -1174,5 +1379,23 @@ class RealisticNeuron(PointNeuron):
 			'i_NaTat': lambda Vm, x, g_bar: cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm) if g_bar is None else cls.i_NaTat(x['m_NaTat'], x['h_NaTat'], Vm, g_bar),
 			'i_NaTs2t': lambda Vm, x, g_bar: cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm) if g_bar is None else cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm, g_bar),
 			'i_SKv31': lambda Vm, x, g_bar: cls.i_SKv31(x['m_SKv31'], Vm) if g_bar is None else cls.i_SKv31(x['m_SKv31'], Vm, g_bar),
-			'i_pas': lambda Vm, x, g_bar: cls.i_pas(Vm),
+			'i_pas': lambda Vm, x, g_bar: cls.i_pas(Vm)
+        }
+
+    @classmethod
+    def conductances(cls):
+        return {
+			'g_Ca': lambda Vm, x, g_bar: cls.g_Ca(x['m_Ca'], x['h_Ca'], Vm) if g_bar is None else cls.g_Ca(x['m_Ca'], x['h_Ca'], Vm, g_bar),
+			'g_CaHVA': lambda Vm, x, g_bar: cls.g_CaHVA(x['m_CaHVA'], x['h_CaHVA'], Vm) if g_bar is None else cls.g_CaHVA(x['m_CaHVA'], x['h_CaHVA'], Vm, g_bar),
+			'g_CaLVAst': lambda Vm, x, g_bar: cls.g_CaLVAst(x['m_CaLVAst'], x['h_CaLVAst'], Vm) if g_bar is None else cls.g_CaLVAst(x['m_CaLVAst'], x['h_CaLVAst'], Vm, g_bar),
+			'g_Ih': lambda Vm, x, g_bar: cls.g_Ih(x['m_Ih'], Vm) if g_bar is None else cls.g_Ih(x['m_Ih'], Vm, g_bar),
+			'g_Im': lambda Vm, x, g_bar: cls.g_Im(x['m_Im'], Vm) if g_bar is None else cls.g_Im(x['m_Im'], Vm, g_bar),
+			'g_KdShu2007': lambda Vm, x, g_bar: cls.g_KdShu2007(x['m_KdShu2007'], x['h_KdShu2007'], Vm) if g_bar is None else cls.g_KdShu2007(x['m_KdShu2007'], x['h_KdShu2007'], Vm, g_bar),
+			'g_KPst': lambda Vm, x, g_bar: cls.g_KPst(x['m_KPst'], x['h_KPst'], Vm) if g_bar is None else cls.g_KPst(x['m_KPst'], x['h_KPst'], Vm, g_bar),
+			'g_KTst': lambda Vm, x, g_bar: cls.g_KTst(x['m_KTst'], x['h_KTst'], Vm) if g_bar is None else cls.g_KTst(x['m_KTst'], x['h_KTst'], Vm, g_bar),
+			'g_NapEt2': lambda Vm, x, g_bar: cls.g_NapEt2(x['m_NapEt2'], x['h_NapEt2'], Vm) if g_bar is None else cls.g_NapEt2(x['m_NapEt2'], x['h_NapEt2'], Vm, g_bar),
+			'g_NaTat': lambda Vm, x, g_bar: cls.g_NaTat(x['m_NaTat'], x['h_NaTat'], Vm) if g_bar is None else cls.g_NaTat(x['m_NaTat'], x['h_NaTat'], Vm, g_bar),
+			'g_NaTs2t': lambda Vm, x, g_bar: cls.g_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm) if g_bar is None else cls.g_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm, g_bar),
+			'g_SKv31': lambda Vm, x, g_bar: cls.g_SKv31(x['m_SKv31'], Vm) if g_bar is None else cls.g_SKv31(x['m_SKv31'], Vm, g_bar),
+			'g_pas': lambda Vm, x, g_bar: cls.g_pas(Vm)
         }

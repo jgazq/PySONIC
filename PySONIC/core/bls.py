@@ -548,7 +548,7 @@ class BilayerSonophore(Model):
         #return (ks/self.curvrad(Z))*((Z/self.a)**2)
         return (2*ks*Z**3)/(self.a**2*(self.a**2+Z**2))
 
-    def PtotQS(self, Z, ng, Qm, Pac, Pm_comp_method):
+    def PtotQS(self, Z, ng, Qm, Pac, Pm_comp_method=PmCompMethod.predict):
         ''' Net quasi-steady pressure for a given acoustic pressure
             (Ptot = Pm + Pg + Pec - P0 - Pac)
 
@@ -586,7 +586,7 @@ class BilayerSonophore(Model):
             s += ', '.join([
                 f'P_QS({Z * 1e9:.2f} nm) = {si_format(P, 2)}Pa' for Z, P in zip(Zbounds, PQS)])
             raise ValueError(s)
-        return brentq(self.PtotQS, *Zbounds, args=(ng, Qm, Pac, Pm_comp_method), xtol=1e-16) #returns the root on the 'x'-axis 
+        return brentq(self.PtotQS, *Zbounds, args=(ng, Qm, Pac, Pm_comp_method), xtol=1e-16) #returns the root on the 'x'-axis which is the Z-axis
 
     def TEleaflet(self, Z):
         ''' Elastic tension in leaflet

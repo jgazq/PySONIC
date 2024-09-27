@@ -165,6 +165,11 @@ class ODESolver:
         else:
             t = self.getTimeVector(self.t[-1], target_t)
             y = odeint(self.dfunc, self.y[-1], t, tfirst=True)
+
+            #BDF (Backward Euler instead of LSODA (Adams/BDF)-(odeint)) (backward differentiation formula)
+            # sol = solve_ivp(fun=self.dfunc,t_span= [self.t[-1], target_t],y0= self.y[-1], method='BDF')
+            # t = sol['t']
+            # y = sol['y'].T
         if remove_first:
             t, y = t[1:], y[1:]
         self.append(t, y)

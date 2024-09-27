@@ -181,6 +181,8 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         #print(f'pre simulation {"-"*260} ###')
         # Run simulation and extract capacitance vector from last cycle
         #print('drive.A:\t',drive.A)
+        #print(f"PtotQS: {super().PtotQS(2.4681524473420407e-10,self.ng0,0,0)}") 
+        #print(f"PMavgpred: {super().PMavgpred(2.4681524473420407e-10)}"); quit()
         if drive.A < 1e-10: #if there is no stimulation -> amplitude = 0, only simulate 2 periods as the deflection is constant
             Z_cycle = super().simCycles(drive, Qm_cycle,nmax=2).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
         else:
@@ -188,7 +190,6 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         #print(Z_cycle)
         #print(f"simulated for: {drive},{fs},{Qm0} ###")
         # print(f'post simulation {"-"*260} ###')
-
         effvars_list = []
         # For each membrane capacitance at rest
         for y in Cm0:

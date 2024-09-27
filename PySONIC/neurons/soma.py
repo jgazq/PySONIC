@@ -389,6 +389,22 @@ class Soma(PointNeuron):
         ica = gca*(v-eca)
 
         return ica
+    
+    @classmethod
+    def g_CaHVA(cls,m_CaHVA,h_CaHVA,Vm,gca_hvabar = 0.00001):
+        ''' gCaHVA conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_CaHVA #
+        h = h_CaHVA #
+        gca_hvabar = 0.00001
+        gca = gca_hvabar*m*m*h
+        ica = gca*(v-eca)
+
+        return gca
 
     @classmethod
     def i_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm,gca_lvastbar = 0.000778 * 1e4):
@@ -404,6 +420,22 @@ class Soma(PointNeuron):
         ica = gca_lvast*(v-eca)
 
         return ica
+    
+    @classmethod
+    def g_CaLVAst(cls,m_CaLVAst,h_CaLVAst,Vm,gca_lvastbar = 0.00001):
+        ''' gCaLVAst conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_CaLVAst #
+        h = h_CaLVAst #
+        gca_lvastbar = 0.00001
+        gca_lvast = gca_lvastbar*m*m*h
+        ica = gca_lvast*(v-eca)
+
+        return gca_lvast
 
     @classmethod
     def i_Ih(cls,m_Ih,Vm,gihbar = 0.000080 * 1e4):
@@ -419,6 +451,22 @@ class Soma(PointNeuron):
         ihcn = gih*(v-ehcn)
 
         return ihcn
+    
+    @classmethod
+    def g_Ih(cls,m_Ih,Vm,gihbar = 0.00001):
+        ''' gIh conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_Ih #
+        gihbar = 0.00001
+        ehcn =  -45.0
+        gih = gihbar*m
+        ihcn = gih*(v-ehcn)
+
+        return gih
 
     @classmethod
     def i_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0.926705 * 1e4):
@@ -434,6 +482,22 @@ class Soma(PointNeuron):
         ina = gnats2_t*(v-ena)
 
         return ina
+    
+    @classmethod
+    def g_NaTs2t(cls,m_NaTs2t,h_NaTs2t,Vm,gnats2_tbar = 0.00001):
+        ''' gNaTs2t conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_NaTs2t #
+        h = h_NaTs2t #
+        gnats2_tbar = 0.00001
+        gnats2_t = gnats2_tbar*m*m*m*h
+        ina = gnats2_t*(v-ena)
+
+        return gnats2_t
 
     @classmethod
     def i_SKv31(cls,m_SKv31,Vm,gskv3_1bar = 0.102517 * 1e4):
@@ -448,6 +512,21 @@ class Soma(PointNeuron):
         ik = gskv3_1*(v-ek)
 
         return ik
+    
+    @classmethod
+    def g_SKv31(cls,m_SKv31,Vm,gskv3_1bar = 0.00001):
+        ''' gSKv31 conductance '''
+        v = Vm
+        celsius = 37
+        ek = -85.0
+        ena = 50.0
+        eca = 132.4579341637009
+        m = m_SKv31 #
+        gskv3_1bar = 0.00001
+        gskv3_1 = gskv3_1bar*m
+        ik = gskv3_1*(v-ek)
+
+        return gskv3_1
 
     @classmethod
     def i_pas(cls, Vm):
@@ -459,6 +538,16 @@ class Soma(PointNeuron):
         ipas = g_pas*(Vm-e_pas)
 
         return ipas
+    
+    @classmethod
+    def g_pas(cls, Vm):
+        ''' gpas conductance '''
+        e_pas  = -75
+        ra = 100
+        cm = 1
+        g_pas = 3e-05 * 1e4 #S/cm2 -> S/m2 
+
+        return g_pas
 
     @classmethod
     def currents(cls):
@@ -469,4 +558,15 @@ class Soma(PointNeuron):
 			'i_NaTs2t': lambda Vm, x: cls.i_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm),
 			'i_SKv31': lambda Vm, x: cls.i_SKv31(x['m_SKv31'], Vm),
 			'i_pas': lambda Vm, x: cls.i_pas(Vm),
+        }
+    
+    @classmethod
+    def conductances(cls):
+        return {
+			'g_CaHVA': lambda Vm, x, g_bar: cls.g_CaHVA(x['m_CaHVA'], x['h_CaHVA'], Vm) if g_bar is None else cls.g_CaHVA(x['m_CaHVA'], x['h_CaHVA'], Vm, g_bar),
+			'g_CaLVAst': lambda Vm, x, g_bar: cls.g_CaLVAst(x['m_CaLVAst'], x['h_CaLVAst'], Vm) if g_bar is None else cls.g_CaLVAst(x['m_CaLVAst'], x['h_CaLVAst'], Vm, g_bar),
+			'g_Ih': lambda Vm, x, g_bar: cls.g_Ih(x['m_Ih'], Vm) if g_bar is None else cls.g_Ih(x['m_Ih'], Vm, g_bar),
+			'g_NaTs2t': lambda Vm, x, g_bar: cls.g_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm) if g_bar is None else cls.g_NaTs2t(x['m_NaTs2t'], x['h_NaTs2t'], Vm, g_bar),
+			'g_SKv31': lambda Vm, x, g_bar: cls.g_SKv31(x['m_SKv31'], Vm) if g_bar is None else cls.g_SKv31(x['m_SKv31'], Vm, g_bar),
+			'g_pas': lambda Vm, x, g_bar: cls.g_pas(Vm)
         }
