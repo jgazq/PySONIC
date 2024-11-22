@@ -437,7 +437,10 @@ class MechSimParser(SimParser):
             'charge': 0.,  # nC/cm2
             'fs': 100.,  # %
             'Qstart' : 0, # nC/m2
-            'Qend' : -1 # nC/m2
+            'Qend' : -1, # nC/m2
+            'cell' : 7,
+            'se' : 0,
+            'stimulation' : 'uniform'
         })
 
         self.factors.update({
@@ -459,6 +462,9 @@ class MechSimParser(SimParser):
         self.addQm0()
         self.addQstart()
         self.addQend()
+        self.addCell()
+        self.addSynapse()
+        self.addStimulation()
         self.addFrequency()
         self.addAmplitude()
         self.addCharge()
@@ -487,6 +493,18 @@ class MechSimParser(SimParser):
     def addQend(self):
         self.add_argument(
             '--Qend', type=int, nargs='+', help='Resting membrane charge density (nC/cm2) range ending value')
+
+    def addCell(self):
+        self.add_argument(
+            '--cell', type=int, nargs='+', help='Aberra cell number to simulate')
+        
+    def addSynapse(self):
+        self.add_argument(
+            '--se', type=int, nargs='+', help='Synapses enabled in the Aberra cell')
+        
+    def addStimulation(self):
+        self.add_argument(
+            '--stimulation', type=str, nargs='+', help='Type of stimulation: uniform, Gaussian or Gaussian3D')
 
     def addFrequency(self):
         self.add_argument(
