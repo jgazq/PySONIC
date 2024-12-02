@@ -211,8 +211,11 @@ class NeuronalBilayerSonophore(BilayerSonophore):
                 effvars.update(effrates) 
                 effvars_list.append(effvars)
                 continue
-
+            # print(Z_cycle)
+            # print(np.mean(Z_cycle))
             Cm_cycle = self.v_capacitance(Z_cycle,y)#;print(len(Cm_cycle))  # F/m2
+            # print(Cm_cycle)
+            # print(np.mean(Cm_cycle))
             # For each coverage fraction
             for x in fs:
                 # Compute membrane potential vector

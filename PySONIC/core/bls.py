@@ -563,6 +563,35 @@ class BilayerSonophore(Model):
             Pm = self.PMavg(Z, self.curvrad(Z), self.surface(Z))
         elif Pm_comp_method is PmCompMethod.predict:
             Pm = self.PMavgpred(Z)
+        # print('\nPtotQS:') 
+        # print(f'Pac = {Pac}, Qm = {Qm}, Z = {Z}')
+        # print(f'Pm = {Pm}, Pg = {self.gasmol2Pa(ng, self.volume(Z))}, Pec = {self.Pelec(Z, Qm)}, P0 = {self.P0}, Pac = {Pac}, P_S = {self.PS(Z)}')
+        # print(f'Ptot = {Pm + self.gasmol2Pa(ng, self.volume(Z)) - self.P0 - Pac + self.Pelec(Z, Qm) - self.PS(Z)}')
+        # print(ng*Rg*self.T,self.volume(Z))
+        if Pac < 1e-5: #if the acoustic pressure is smaller than 10^-5 it is assumed to be zero
+            return Pm + self.Pelec(Z, Qm) - self.PS(Z) #P_G and P_0 cancel each other out and P_ac is zero
+        return Pm + self.gasmol2Pa(ng, self.volume(Z)) - self.P0 - Pac + self.Pelec(Z, Qm) - self.PS(Z) #addition of tension pressure
+    
+    def PtotQS2(self, Qm, ng, Z, Pac, Pm_comp_method=PmCompMethod.predict):
+        ''' Net quasi-steady pressure for a given acoustic pressure
+            (Ptot = Pm + Pg + Pec - P0 - Pac)
+
+            :param Z: leaflet apex deflection (m)
+            :param ng: internal molar content (mol)
+            :param Qm: membrane charge density (C/m2)
+            :param Pac: acoustic pressure (Pa)
+            :param Pm_comp_method: computation method for average intermolecular pressure
+            :return: total balance pressure (Pa)
+        '''
+        if Pm_comp_method is PmCompMethod.direct:
+            Pm = self.PMavg(Z, self.curvrad(Z), self.surface(Z))
+        elif Pm_comp_method is PmCompMethod.predict:
+            Pm = self.PMavgpred(Z)
+        # print('\nPtotQS:') 
+        # print(f'Pac = {Pac}, Qm = {Qm}, Z = {Z}')
+        # print(f'Pm = {Pm}, Pg = {self.gasmol2Pa(ng, self.volume(Z))}, Pec = {self.Pelec(Z, Qm)}, P0 = {self.P0}, Pac = {Pac}, P_S = {self.PS(Z)}')
+        # print(f'Ptot = {Pm + self.gasmol2Pa(ng, self.volume(Z)) - self.P0 - Pac + self.Pelec(Z, Qm) - self.PS(Z)}')
+        # print(ng*Rg*self.T,self.volume(Z))
         if Pac < 1e-5: #if the acoustic pressure is smaller than 10^-5 it is assumed to be zero
             return Pm + self.Pelec(Z, Qm) - self.PS(Z) #P_G and P_0 cancel each other out and P_ac is zero
         return Pm + self.gasmol2Pa(ng, self.volume(Z)) - self.P0 - Pac + self.Pelec(Z, Qm) - self.PS(Z) #addition of tension pressure
@@ -586,7 +615,23 @@ class BilayerSonophore(Model):
             s += ', '.join([
                 f'P_QS({Z * 1e9:.2f} nm) = {si_format(P, 2)}Pa' for Z, P in zip(Zbounds, PQS)])
             raise ValueError(s)
+        #print(brentq(self.PtotQS, *Zbounds, args=(ng, Qm, Pac, Pm_comp_method), xtol=1e-16))
         return brentq(self.PtotQS, *Zbounds, args=(ng, Qm, Pac, Pm_comp_method), xtol=1e-16) #returns the root on the 'x'-axis which is the Z-axis
+    
+    def balancedefQS2(self, ng, Z, Pac=0.0, Pm_comp_method=PmCompMethod.predict):
+        ''' Quasi-steady equilibrium deflection for a given acoustic pressure
+            (computed by approximating the root of quasi-steady pressure)
+
+            :param ng: internal molar content (mol)
+            :param Qm: membrane charge density (C/m2)
+            :param Pac: external acoustic perturbation (Pa)
+            :param Pm_comp_method: computation method for average intermolecular pressure
+            :return: leaflet deflection canceling quasi-steady pressure (m)
+        '''
+        Qbounds = (-1e-3,-1e-7)
+        #print(brentq(self.PtotQS, *Zbounds, args=(ng, Qm, Pac, Pm_comp_method), xtol=1e-16))
+        # print(ng, Z, Pac, Pm_comp_method)
+        return brentq(self.PtotQS2, *Qbounds, args=(ng, Z, Pac, Pm_comp_method), xtol=1e-16) #returns the root on the 'x'-axis which is the Z-axis
 
     def TEleaflet(self, Z):
         ''' Elastic tension in leaflet
@@ -724,6 +769,10 @@ class BilayerSonophore(Model):
         Pac = drive.compute(t)
         Pv = self.PVleaflet(U, R) + self.PVfluid(U, R)
         Ptot = Pm + Pg - self.P0 - Pac + self.PEtot(Z, R) + Pv + self.Pelec(Z, Qm)
+        # print('\nPtot:') 
+        # print(f'Pac = {Pac}, Qm = {Qm}, Z = {Z}')
+        # print(f'Pm = {Pm}, Pg = {Pg}, Pec = {self.Pelec(Z, Qm)}, P0 = {self.P0}, Pac = {Pac}, P_S = {self.PS(Z)}')
+        # print(f'Ptot = {Ptot}')
 
         # Compute derivatives
         dUdt = self.accP(Ptot, R) + self.accNL(U, R)
@@ -844,5 +893,9 @@ class BilayerSonophore(Model):
     def getGammaLookup(self):
         return self.Cm_lkp.reduce(lambda x, **kwargs: np.ptp(x, **kwargs) / 2, 't')
 
-# a = BilayerSonophore(64*1e-9,1e-2,1e-2*-75) #'a', 'Cm0', and 'Qm0'
-# print(a.balancedefQS(0,1,0))
+# a = BilayerSonophore(64*1e-9,1e-2,1e-5*-75) #'a', 'Cm0', and 'Qm0'
+# #print(f'PtotQSS = {a.PtotQS(0,a.ng0,-0.00075,0)}') #(Z, ng, Qm, Pac, Pm_comp_method)
+# #print(f"balancedefQS = {a.balancedefQS(a.ng0,0,0)}") #(ng, Qm, Pac=0.0, Pm_comp_method)
+# #print(f'PtotQSS = {a.PtotQS2(-0.00075,a.ng0,0,0)}') #(Z, ng, Qm, Pac, Pm_comp_method)
+# print(f"balancedefQS = {a.balancedefQS2(a.ng0,0,0)*1e5}") #(ng, Z, Pac=0.0, Pm_comp_method)
+# quit()
