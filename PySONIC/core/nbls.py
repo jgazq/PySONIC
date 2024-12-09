@@ -177,25 +177,27 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             Qm_fft = np.hstack(([Qm0 + 0j], A_Qm * (np.cos(phi_Qm) + 1j * np.sin(phi_Qm))))
             Qm_cycle = np.fft.irfft(Qm_fft, n=drive.nPerCycle) * drive.nPerCycle
             novertones = len(A_Qm)
-
-        #print(f'pre simulation {"-"*260} ###')
-        # Run simulation and extract capacitance vector from last cycle
-        #print('drive.A:\t',drive.A)
-        #print(f"PtotQS: {super().PtotQS(2.4681524473420407e-10,self.ng0,0,0)}") 
-        #print(f"PMavgpred: {super().PMavgpred(2.4681524473420407e-10)}"); quit()
-        if drive.A < 1e-10: #if there is no stimulation -> amplitude = 0, only simulate 2 periods as the deflection is constant
-            Z_cycle = super().simCycles(drive, Qm_cycle,nmax=2).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
-        else:
-            Z_cycle = super().simCycles(drive, Qm_cycle).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
-        #print(Z_cycle)
-        #print(f"simulated for: {drive},{fs},{Qm0} ###")
-        # print(f'post simulation {"-"*260} ###')
+        
         effvars_list = []
+
         # For each membrane capacitance at rest
         for y in Cm0:
-            
             self.Cm0 = y #code was adapted so self.Cm0 is not used but maybe better to just change it -> this gets defined in init of BilayerSonophore
             self.pneuron.Cm0 = y #also change the capacitance in the pneuron (Qbounds is already calculated before this adaptation so has no influence in Q-range)
+            self.Qm0 = self.Cm0 * self.pneuron.Vm0 * 1e-3
+            self.__init__(self.a,self.pneuron)
+            #print(f'pre simulation {"-"*260} ###')
+            # Run simulation and extract capacitance vector from last cycle
+            #print('drive.A:\t',drive.A)
+            #print(f"PtotQS: {super().PtotQS(2.4681524473420407e-10,self.ng0,0,0)}") 
+            #print(f"PMavgpred: {super().PMavgpred(2.4681524473420407e-10)}"); quit()
+            if drive.A < 1e-10: #if there is no stimulation -> amplitude = 0, only simulate 2 periods as the deflection is constant
+                Z_cycle = super().simCycles(drive, Qm_cycle,nmax=2).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
+            else:
+                Z_cycle = super().simCycles(drive, Qm_cycle).tail(drive.nPerCycle)['Z'].values#;print(len(Z_cycle))  # m
+            #print(Z_cycle)
+            #print(f"simulated for: {drive},{fs},{Qm0} ###")
+            # print(f'post simulation {"-"*260} ###')
 
             new_bounds = self.pneuron.Qbounds
             if Qm0 > new_bounds[1] or Qm0 < new_bounds[0]:
@@ -211,11 +213,11 @@ class NeuronalBilayerSonophore(BilayerSonophore):
                 effvars.update(effrates) 
                 effvars_list.append(effvars)
                 continue
-            # print(Z_cycle)
-            # print(np.mean(Z_cycle))
+            #print(Z_cycle)
+            #print(f"Z_cycle = {np.mean(Z_cycle)}")
             Cm_cycle = self.v_capacitance(Z_cycle,y)#;print(len(Cm_cycle))  # F/m2
             # print(Cm_cycle)
-            # print(np.mean(Cm_cycle))
+            # print(f"Cm_cycle = {np.mean(Cm_cycle)}")
             # For each coverage fraction
             for x in fs:
                 # Compute membrane potential vector
