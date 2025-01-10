@@ -269,6 +269,8 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             fname = f'{self.pneuron.lookup_name}_lookups'
         except AttributeError:
             fname = f'{self.pneuron.name}_lookups'
+        if novertones > 0:
+            fname += f'_{int(novertones)}ov'
         return f'{fname}.pkl' #just use always the same lookup? why make a file for every combination of parameters
         if a is not None:
             fname += f'_{a * 1e9:.0f}nm'
@@ -305,7 +307,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
                 del lkp.tables['tcomp2']
         return lkp
 
-    def getLookup2D(self, f, fs, Cm0=None):
+    def getLookup2D(self, f, fs, Cm0=None, novertones=0.):
         #6D: a,f,A,Q,C,fs -> 2D: A,Q
         #so we only put A and Q in the name before merging them (when calculating the LUT) as they need to be complete to load into the NMODL files
         #when reading them in, A and Q are not included in the name
@@ -324,10 +326,12 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         logger.debug(f'loading {self.pneuron} lookup for {proj_str}')
         if fs < 1.: #why are a and f only included in filename if fs<1 and is fs left out? where is A??
             kwargs = proj_kwargs.copy() #original line
+            kwargs['novertones'] = novertones
             #kwargs['fs'] = None #why only include if 1? #original line
         else:
             #kwargs = {'fs': fs} #original line
             kwargs = proj_kwargs.copy() #same as when fs < 1 
+            kwargs['novertones'] = novertones
         return self.getLookup(**kwargs).projectN(proj_kwargs)
 
     def fullDerivatives(self, t, y, drive, fs):

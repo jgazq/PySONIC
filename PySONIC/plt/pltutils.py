@@ -30,6 +30,12 @@ def getSymmetricCmap(cmap_key):
     return colors.LinearSegmentedColormap.from_list(f'sym_{cmap_key}', cl)
 
 
+# for k in ['viridis', 'plasma', 'inferno', 'magma', 'cividis']:
+#     for cmap_key in [k, f'{k}_r']:
+#         sym_cmap = cm.get_cmap(cmap_key)
+#         #matplotlib.colormaps.register(name=sym_cmap.name, cmap=sym_cmap) #added
+#         #plt.register_cmap(name=sym_cmap.name, cmap=sym_cmap)
+
 for k in ['viridis', 'plasma', 'inferno', 'magma', 'cividis']:
     for cmap_key in [k, f'{k}_r']:
         sym_cmap = getSymmetricCmap(cmap_key)
