@@ -270,7 +270,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         except AttributeError:
             fname = f'{self.pneuron.name}_lookups'
         if novertones > 0:
-            fname += f'_{int(novertones)}ov'
+            fname += f'_{int(novertones)}ov_Jac'
         return f'{fname}.pkl' #just use always the same lookup? why make a file for every combination of parameters
         if a is not None:
             fname += f'_{a * 1e9:.0f}nm'
@@ -298,7 +298,7 @@ class NeuronalBilayerSonophore(BilayerSonophore):
         keep_tcomp = kwargs.pop('keep_tcomp', False)
         lookup_path = self.getLookupFilePath(*args, **kwargs)
         lkp = EffectiveVariablesLookup.fromPickle(lookup_path)
-        if 'Q_ext' in lkp.tables.keys(): #Q_ext is used if Cm0 variations are allowed
+        if 'Q_ext' in lkp.tables.keys(): #Q_ext is used if Cm0 variations are allowed #Cm0_var2 = 1
             lkp.Q_ext = lkp.tables['Q_ext']
             del lkp.tables['Q_ext'] 
         if not keep_tcomp:
@@ -332,7 +332,10 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             #kwargs = {'fs': fs} #original line
             kwargs = proj_kwargs.copy() #same as when fs < 1 
             kwargs['novertones'] = novertones
-        return self.getLookup(**kwargs).projectN(proj_kwargs)
+            
+        lkp = self.getLookup(**kwargs)
+        lkp.Jac = lkp.Jac.projectN(proj_kwargs)
+        return lkp.projectN(proj_kwargs)
 
     def fullDerivatives(self, t, y, drive, fs):
         ''' Compute the full system derivatives.

@@ -24,7 +24,7 @@ class Lookup:
 
     interp_choices = ('linear', 'quadratic', 'cubic', 'poly1', 'poly2', 'poly3')
 
-    def __init__(self, refs, tables, interp_method='linear', extrapolate=False, Q_ext = None):
+    def __init__(self, refs, tables, interp_method='linear', extrapolate=False, Q_ext = None, Jac = None):
         ''' Constructor.
 
             :param refs: dictionary of reference one-dimensional input vectors.
@@ -33,12 +33,14 @@ class Lookup:
             :param extrapolate: boolean stating whether tables can be extrapolated outside
                 of reference bounds
             :param Q_ext: array containing the extended version of the membrane charge density
+            :param Jac: dictionary containing the derivative of the output overtones over the input overtones
         '''
         self.refs = refs
         self.tables = tables
         self.interp_method = interp_method
         self.extrapolate = extrapolate
         self.Q_ext = Q_ext
+        self.Jac = Lookup(self.refs,Jac) if Jac else None
         for k, v in self.items():
             if v.shape != self.dims:
                 continue #POTENTIAL RISK
@@ -148,7 +150,8 @@ class Lookup:
         return {
             'interp_method': self.interp_method,
             'extrapolate': self.extrapolate,
-            'Q_ext': self.Q_ext}
+            'Q_ext': self.Q_ext,
+            'Jac': self.Jac}
 
     def checkAgainst(self, other):
         ''' Check self object against another lookup object for compatibility. '''
@@ -396,6 +399,8 @@ class Lookup:
         cls.checkForExistence(fpath)
         with open(fpath, 'rb') as fh:
             d = pickle.load(fh)
+        if 'Jacobians' in d.keys():
+            return cls(d['refs'], d['tables'], Jac = d['Jacobians'])
         return cls(d['refs'], d['tables'])
 
     @staticmethod
