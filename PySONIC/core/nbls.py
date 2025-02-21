@@ -334,7 +334,8 @@ class NeuronalBilayerSonophore(BilayerSonophore):
             kwargs['novertones'] = novertones
             
         lkp = self.getLookup(**kwargs)
-        lkp.Jac = lkp.Jac.projectN(proj_kwargs)
+        if novertones:
+            lkp.Jac = lkp.Jac.projectN(proj_kwargs)
         return lkp.projectN(proj_kwargs)
 
     def fullDerivatives(self, t, y, drive, fs):
